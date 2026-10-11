@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/naik-profile-banner.svg" alt="Abdur Rahim Naik — Turning Ideas Into Impact. Graphic design, brand identity and creative technology." width="100%" />
+<img src="naik-profile-banner.svg" alt="Abdur Rahim Naik — Turning Ideas Into Impact. Graphic design, brand identity and creative technology." width="100%" />
 
 # Turning Ideas Into Impact
 
@@ -81,10 +81,10 @@ My design work lives on Behance. Browse the full portfolio here: **[behance.net/
 
 <div align="center">
 
-<img height="170" alt="Abdur Rahim Naik's GitHub stats summary" src="https://github-readme-stats.vercel.app/api?username=abdurrahimnaik&show_icons=true&hide_border=true&bg_color=0B1020&title_color=10B981&text_color=E2E8F0&icon_color=3B82F6" />
-<img height="170" alt="Most used programming languages on Abdur Rahim Naik's GitHub" src="https://github-readme-stats.vercel.app/api/top-langs/?username=abdurrahimnaik&layout=compact&hide_border=true&bg_color=0B1020&title_color=10B981&text_color=E2E8F0" />
+<img height="170" alt="Abdur Rahim Naik's GitHub stats summary" src="https://github-readme-stats.vercel.app/api?username=naikabdurrahim-lgtm&show_icons=true&hide_border=true&bg_color=0B1020&title_color=10B981&text_color=E2E8F0&icon_color=3B82F6" />
+<img height="170" alt="Most used programming languages on Abdur Rahim Naik's GitHub" src="https://github-readme-stats.vercel.app/api/top-langs/?username=naikabdurrahim-lgtm&layout=compact&hide_border=true&bg_color=0B1020&title_color=10B981&text_color=E2E8F0" />
 
-<img alt="Abdur Rahim Naik's GitHub contribution streak" src="https://streak-stats.demolab.com/?user=abdurrahimnaik&hide_border=true&background=0B1020&ring=8B5CF6&fire=FF6B5E&currStreakLabel=E2E8F0&sideLabels=10B981&currStreakNum=E2E8F0&sideNums=E2E8F0&dates=94A3B8" />
+<img alt="Abdur Rahim Naik's GitHub contribution streak" src="https://streak-stats.demolab.com/?user=naikabdurrahim-lgtm&hide_border=true&background=0B1020&ring=8B5CF6&fire=FF6B5E&currStreakLabel=E2E8F0&sideLabels=10B981&currStreakNum=E2E8F0&sideNums=E2E8F0&dates=94A3B8" />
 
 </div>
 

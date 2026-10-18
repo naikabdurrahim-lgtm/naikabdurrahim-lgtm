@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Render output — regenerable, and too large for git.
+# The deliverable videos live in brand-film/output/ in the workspace.
+brand-film/output/*.mp4
+brand-film/output/*.wav
+brand-film/output/qa-summary.json
+
+# Review frames — regenerate with `python src/render.py --stills`.
+# The two contact sheets are kept because the docs reference them.
+brand-film/stills/*.png
+!brand-film/stills/_CONTACT_frames.png
+!brand-film/stills/_CONTACT_assets.png
+
+# Artwork extracted from the source PDF — regenerate with assets.ensure_extracted()
+brand-film/assets/derived/*.png
+brand-film/assets/derived/*.jpg
+
+# Scratch
+brand-film/tools/resvg/
+.DS_Store

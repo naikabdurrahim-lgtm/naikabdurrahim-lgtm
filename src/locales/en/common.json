@@ -48,7 +48,9 @@
     "stockValue": "Stock value",
     "totalDue": "Total dues",
     "noSalesYet": "No sales yet today",
-    "startSelling": "Make your first sale"
+    "startSelling": "Make your first sale",
+    "todaysCollected": "Collected today",
+    "lowStockLabel": "products need restocking"
   },
   "status": {
     "offline": "Offline, your data is safe",

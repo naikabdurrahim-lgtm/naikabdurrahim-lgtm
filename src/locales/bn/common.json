@@ -48,7 +48,9 @@
     "stockValue": "স্টকের দাম",
     "totalDue": "মোট বাকি",
     "noSalesYet": "আজ এখনো কোনো বিক্রি হয়নি",
-    "startSelling": "প্রথম বিক্রি শুরু করুন"
+    "startSelling": "প্রথম বিক্রি শুরু করুন",
+    "todaysCollected": "আজ আদায়",
+    "lowStockLabel": "টি পণ্য শেষ হয়ে আসছে"
   },
   "status": {
     "offline": "অফলাইন, ডাটা নিরাপদ আছে",

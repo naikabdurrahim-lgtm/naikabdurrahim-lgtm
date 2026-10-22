@@ -1,0 +1,55 @@
+{
+  "title": "Reports",
+  "subtitle": "What sold, what it earned",
+  "loadFailed": "Could not load the numbers. Check the connection and try again.",
+  "loadMore": "Show more",
+  "backToToday": "Back to today",
+  "noInvoice": "No invoice number",
+  "voided": "Cancelled",
+  "itemsLabel": "items",
+  "dueLine": "Due",
+  "sold": "sold",
+  "bills": "bills",
+  "profitLine": "Profit",
+  "today": {
+    "title": "Today",
+    "subtitle": "Today's sales and collections",
+    "reports": "Reports",
+    "sales": "Sales today",
+    "collected": "Collected today",
+    "credit": "Credit given",
+    "profit": "Profit today",
+    "saleCountLabel": "bills so far",
+    "bills": "Today's bills",
+    "emptyTitle": "No sales yet today",
+    "emptyBody": "The first bill will show up here.",
+    "startSelling": "Start selling"
+  },
+  "range": {
+    "label": "Date range",
+    "today": "Today",
+    "week": "7 days",
+    "month": "30 days"
+  },
+  "totals": {
+    "sales": "Total sales",
+    "profit": "Total profit",
+    "credit": "Credit given",
+    "collected": "Collected",
+    "saleCount": "Total bills"
+  },
+  "chart": {
+    "title": "Day by day",
+    "metric": "Show",
+    "sales": "Sales",
+    "profit": "Profit",
+    "hint": "Tap a day",
+    "label": "Sales by day",
+    "empty": "Nothing sold in this period."
+  },
+  "top": {
+    "title": "Best sellers",
+    "emptyTitle": "Nothing sold yet",
+    "emptyBody": "Once you sell, the best-moving products appear here."
+  }
+}

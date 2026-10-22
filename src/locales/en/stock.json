@@ -1,0 +1,79 @@
+{
+  "title": "Stock",
+  "subtitle": "What you have, what is running out",
+  "loadFailed": "Could not load the stock. Check the connection and try again.",
+  "loadMore": "Show more",
+  "saved": "Stock saved",
+  "searchPlaceholder": "Product name or barcode",
+  "searchLabel": "Search stock",
+  "adjustFor": "Adjust stock for {{name}}",
+  "alertAt": "Alert at",
+  "overview": {
+    "products": "Products",
+    "low": "Running low",
+    "out": "Finished",
+    "value": "Stock value"
+  },
+  "filter": {
+    "label": "Which products",
+    "all": "All",
+    "low": "Running low",
+    "out": "Finished"
+  },
+  "status": {
+    "ok": "In stock",
+    "low": "Running low",
+    "out": "Out of stock"
+  },
+  "emptyTitle": "No products in stock yet",
+  "emptyBody": "Add a product and its stock will show up here.",
+  "emptyAction": "Add a product",
+  "emptySearchTitle": "Nothing found",
+  "emptySearchBody": "Check the name, or change the filter.",
+  "sheet": {
+    "title": "Adjust stock",
+    "direction": "Stock in or out",
+    "in": "Stock came in",
+    "out": "Stock went out",
+    "reasonLabel": "Reason",
+    "amount": "How much",
+    "afterHint": "Now {{before}} · after {{after}}",
+    "afterLabel": "after this",
+    "cost": "Cost per unit",
+    "costHint": "Optional — used for profit later",
+    "note": "Note (optional)",
+    "notePlaceholder": "e.g. new delivery",
+    "confirm": "Save",
+    "saving": "Saving…"
+  },
+  "reason": {
+    "purchase": "New stock",
+    "return": "Returned",
+    "count": "Count is off",
+    "damage": "Damaged"
+  },
+  "form": {
+    "quantityInvalid": "Enter how much, correctly.",
+    "reasonRequired": "Write the reason — it is what makes the change explainable later.",
+    "forbidden": "You are not allowed to change stock. Ask the owner.",
+    "serviceNoStock": "A service product holds no stock.",
+    "failed": "Not saved. Check the connection and try again."
+  },
+  "detail": {
+    "inStock": "In stock now",
+    "adjust": "Adjust stock",
+    "readOnly": "An owner or manager is needed to change stock.",
+    "history": "Stock history",
+    "running": "Balance",
+    "emptyTitle": "No movements yet",
+    "emptyBody": "Stock coming in or going out will appear here."
+  },
+  "types": {
+    "opening": "Opening stock",
+    "purchase": "Purchase",
+    "sale": "Sale",
+    "sale_return": "Sale return",
+    "adjustment": "Adjustment",
+    "damage": "Damage"
+  }
+}

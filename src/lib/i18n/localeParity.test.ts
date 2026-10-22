@@ -55,7 +55,16 @@ describe.each(PAIRS)('locale parity — $ns', ({ bn, en }) => {
 
 describe('i18n setup', () => {
   it('ships every namespace for both languages', () => {
-    expect(NAMESPACES).toEqual(['common', 'auth', 'onboarding', 'products', 'pos', 'customers']);
+    expect(NAMESPACES).toEqual([
+      'common',
+      'auth',
+      'onboarding',
+      'products',
+      'pos',
+      'customers',
+      'stock',
+      'reports',
+    ]);
     expect(SUPPORTED_LANGUAGES).toEqual(['bn', 'en']);
   });
 

@@ -1,11 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { BarChart3, Boxes } from 'lucide-react';
 import { AppShell } from '@/app/layout/AppShell';
 import { HomePage } from '@/app/pages/HomePage';
 import { HealthPage } from '@/app/pages/HealthPage';
 import { SettingsPage } from '@/app/pages/SettingsPage';
 import { NotFoundPage } from '@/app/pages/NotFoundPage';
-import { ModulePlaceholder } from '@/app/pages/ModulePlaceholder';
 import { RequireAuth } from '@/features/auth/components/RequireAuth';
 import { RequireRole } from '@/features/auth/components/RequireRole';
 import { RequireShop } from '@/features/auth/components/RequireShop';
@@ -21,6 +19,10 @@ import { DuePage } from '@/features/customers/pages/DuePage';
 import { CustomersPage } from '@/features/customers/pages/CustomersPage';
 import { CustomerPage } from '@/features/customers/pages/CustomerPage';
 import { CustomerFormPage } from '@/features/customers/pages/CustomerFormPage';
+import { StockPage } from '@/features/stock/pages/StockPage';
+import { ProductStockPage } from '@/features/stock/pages/ProductStockPage';
+import { TodayPage } from '@/features/reports/pages/TodayPage';
+import { ReportsPage } from '@/features/reports/pages/ReportsPage';
 
 /**
  * Route table.
@@ -68,12 +70,19 @@ export const router = createBrowserRouter([
                 element: <DuePage />,
               },
               {
+                // Stock is readable by everyone (a cashier needs to answer
+                // "আছে?"); changing it is gated by RLS and the record RPC.
                 path: 'stock',
-                element: <ModulePlaceholder icon={Boxes} titleKey="nav.stock" phase={7} />,
+                children: [
+                  { index: true, element: <StockPage /> },
+                  { path: ':productId', element: <ProductStockPage /> },
+                ],
               },
               {
+                // Takings, collections and the day's bills: every role. The
+                // profit tile is null for a cashier and simply not rendered.
                 path: 'today',
-                element: <ModulePlaceholder icon={BarChart3} titleKey="nav.today" phase={7} />,
+                element: <TodayPage />,
               },
               {
                 // The catalogue: owner, manager and cashier all need to look a
@@ -98,14 +107,7 @@ export const router = createBrowserRouter([
               {
                 // Profit and cost data: owner and manager only.
                 element: <RequireRole roles={['owner', 'manager']} />,
-                children: [
-                  {
-                    path: 'reports',
-                    element: (
-                      <ModulePlaceholder icon={BarChart3} titleKey="nav.reports" phase={7} />
-                    ),
-                  },
-                ],
+                children: [{ path: 'reports', element: <ReportsPage /> }],
               },
               // Unknown URL inside the shell: keep the bottom nav so the
               // shopkeeper is one tap from home.

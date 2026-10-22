@@ -3,8 +3,13 @@ import { Link } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import { BigActionButton } from '@/components/common/BigActionButton';
 import { StatCard } from '@/components/common/StatCard';
+import { NumberText } from '@/components/common/NumberText';
 import { Button } from '@/components/ui/button';
 import { usePreferences } from '@/features/settings/preferences';
+import { useAuth } from '@/features/auth/useAuth';
+import { useDueSummary } from '@/features/customers/queries';
+import { useToday } from '@/features/reports/queries';
+import { useStockOverview } from '@/features/stock/queries';
 import { useAppTranslation } from '@/lib/i18n/useAppTranslation';
 
 /**
@@ -15,6 +20,14 @@ import { useAppTranslation } from '@/lib/i18n/useAppTranslation';
 export function HomePage() {
   const { t } = useAppTranslation();
   const mode = usePreferences((s) => s.mode);
+  const tenantId = useAuth().activeTenant?.tenantId ?? '';
+
+  // The dashboard is the same data the আজকের হিসাব screen uses, so the two can
+  // never disagree. A cashier gets `null` for profit and sees collections instead.
+  const today = useToday(tenantId);
+  const due = useDueSummary(tenantId);
+  const stock = useStockOverview(tenantId);
+  const showProfit = today.data?.profitPaisa !== null && today.data !== undefined;
 
   return (
     <div className="space-y-5">
@@ -36,10 +49,43 @@ export function HomePage() {
       ) : (
         <>
           <section aria-label={t('nav.today')} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard icon={ShoppingCart} label={t('home.todaysSales')} paisa={null} tone="in" />
-            <StatCard icon={BarChart3} label={t('home.todaysProfit')} paisa={null} tone="in" />
-            <StatCard icon={Boxes} label={t('home.stockValue')} paisa={null} />
-            <StatCard icon={Wallet} label={t('home.totalDue')} paisa={null} tone="out" />
+            <StatCard
+              icon={ShoppingCart}
+              label={t('home.todaysSales')}
+              paisa={today.data?.salesPaisa ?? null}
+              tone="in"
+              loading={today.isPending}
+            />
+            {showProfit ? (
+              <StatCard
+                icon={BarChart3}
+                label={t('home.todaysProfit')}
+                paisa={today.data?.profitPaisa ?? null}
+                tone="in"
+                loading={today.isPending}
+              />
+            ) : (
+              <StatCard
+                icon={BarChart3}
+                label={t('home.todaysCollected')}
+                paisa={today.data?.collectedPaisa ?? null}
+                tone="in"
+                loading={today.isPending}
+              />
+            )}
+            <StatCard
+              icon={Boxes}
+              label={t('home.stockValue')}
+              paisa={stock.data?.valuePaisa ?? null}
+              loading={stock.isPending}
+            />
+            <StatCard
+              icon={Wallet}
+              label={t('home.totalDue')}
+              paisa={due.data?.totalDuePaisa ?? null}
+              tone="out"
+              loading={due.isPending}
+            />
           </section>
 
           <section aria-label={t('home.proModeHint')} className="grid gap-3 sm:grid-cols-3">
@@ -49,6 +95,24 @@ export function HomePage() {
           </section>
         </>
       )}
+
+      {stock.data && stock.data.outCount + stock.data.lowCount > 0 ? (
+        <Link
+          to="/stock"
+          className="app-card flex min-h-touch items-center gap-3 p-4 text-sm font-medium"
+        >
+          <span
+            aria-hidden="true"
+            className="grid size-10 place-items-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400"
+          >
+            <Boxes className="size-5" />
+          </span>
+          <span className="flex-1">
+            <NumberText value={stock.data.lowCount + stock.data.outCount} maxDecimals={0} />{' '}
+            {t('home.lowStockLabel')}
+          </span>
+        </Link>
+      ) : null}
 
       <section className="app-card flex items-center gap-3 p-4">
         <span

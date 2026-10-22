@@ -16,7 +16,8 @@
 | 4 | Products & categories: paged search RPC, cost hidden from staff, add/edit/delete with undo, category sheet | ✅ done |
 | 5 | POS: product grid, barcode entry, fractional quantities, discounts, cash/credit, receipt, 10 s undo | ✅ done |
 | 6 | Due ledger & customers: বাকি screen, khata with running balance, collect with 10 s undo, soft delete | ✅ done |
-| 7–12 | Stock/reports → packs → offline sync → staff/audit → AI → Android/launch | next: 7 |
+| 7 | Stock, dashboard & reports: movement history with reasons, low-stock list, today's numbers, 7/30-day reports | ✅ done |
+| 8–12 | Business packs → offline sync → staff/audit → AI → Android/launch | next: 8 |
 
 The folder scaffold for every upcoming phase already exists, so later work adds files rather than restructuring.
 
@@ -52,7 +53,7 @@ Supabase is optional in Phase 1: without `.env` values the app still runs and `/
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | Vitest unit tests |
 | `npm run format` | Prettier write |
-| `npm run db:test` | Apply migrations to a scratch PostgreSQL and run the 8 SQL suites |
+| `npm run db:test` | Apply migrations to a scratch PostgreSQL and run the 11 SQL suites |
 | `npm run db:types` | Regenerate `database.types.ts` from the live schema |
 
 ---
@@ -68,7 +69,7 @@ src/
   lib/        money.ts, env.ts, i18n/, supabase/, useOnlineStatus.ts
   locales/    bn/ en/
   styles/     design tokens
-supabase/     migrations (15), seed, SQL test suites (9)            (Phases 2–6)
+supabase/     migrations (16), seed, SQL test suites (11)           (Phases 2–7)
 ai-service/   FastAPI AI service                     (Phase 11)
 docs/         rules, architecture, decisions, security, test plan
 ```

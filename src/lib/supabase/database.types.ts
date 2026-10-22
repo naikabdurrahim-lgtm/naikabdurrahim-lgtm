@@ -889,6 +889,7 @@ export type Database = {
           occurred_at: string;
           created_at: string;
           created_by: string;
+          seq: number;
         };
         Insert: {
           id?: string;
@@ -906,6 +907,7 @@ export type Database = {
           occurred_at?: string;
           created_at?: string;
           created_by?: string;
+          seq: number;
         };
         Update: {
           id?: string;
@@ -923,6 +925,7 @@ export type Database = {
           occurred_at?: string;
           created_at?: string;
           created_by?: string;
+          seq?: number;
         };
         Relationships: [
           {
@@ -1387,11 +1390,70 @@ export type Database = {
           created_at: string | null;
         }[];
       };
+      list_stock: {
+        Args: {
+          p_tenant: string;
+          p_query?: string;
+          p_filter?: string;
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: {
+          id: string | null;
+          name: string | null;
+          unit_code: string | null;
+          stock_qty: number | null;
+          stock_alert_qty: number | null;
+          sell_price_paisa: number | null;
+          buy_price_paisa: number | null;
+          stock_value_paisa: number | null;
+          is_service: boolean | null;
+          last_movement_at: string | null;
+        }[];
+      };
+      product_stock_movements: {
+        Args: {
+          p_tenant: string;
+          p_product: string;
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: {
+          id: string | null;
+          movement_type: string | null;
+          qty_delta: number | null;
+          unit_cost_paisa: number | null;
+          reason: string | null;
+          occurred_at: string | null;
+          reference_type: string | null;
+          created_by_name: string | null;
+          running_qty: number | null;
+        }[];
+      };
       purge_old_auth_attempts: {
         Args: {
           p_older_than?: Json;
         };
         Returns: number;
+      };
+      recent_sales: {
+        Args: {
+          p_tenant: string;
+          p_limit?: number;
+          p_offset?: number;
+          p_date?: string;
+        };
+        Returns: {
+          id: string | null;
+          invoice_no: string | null;
+          total_paisa: number | null;
+          due_paisa: number | null;
+          status: string | null;
+          business_date: string | null;
+          created_at: string | null;
+          customer_name: string | null;
+          item_count: number | null;
+        }[];
       };
       record_auth_attempt: {
         Args: {
@@ -1408,6 +1470,21 @@ export type Database = {
           p_payload: Json;
         };
         Returns: Json;
+      };
+      sales_report: {
+        Args: {
+          p_tenant: string;
+          p_from: string;
+          p_to: string;
+        };
+        Returns: {
+          business_date: string | null;
+          sale_count: number | null;
+          sales_paisa: number | null;
+          credit_paisa: number | null;
+          collected_paisa: number | null;
+          profit_paisa: number | null;
+        }[];
       };
       search_products: {
         Args: {
@@ -1451,12 +1528,39 @@ export type Database = {
         };
         Returns: boolean;
       };
+      stock_overview: {
+        Args: {
+          p_tenant: string;
+        };
+        Returns: {
+          product_count: number | null;
+          low_stock_count: number | null;
+          out_of_stock_count: number | null;
+          stock_value_paisa: number | null;
+        }[];
+      };
       tenant_day_summary: {
         Args: {
           p_tenant: string;
           p_date?: string;
         };
         Returns: Json;
+      };
+      top_products: {
+        Args: {
+          p_tenant: string;
+          p_from?: string;
+          p_to?: string;
+          p_limit?: number;
+        };
+        Returns: {
+          product_id: string | null;
+          name: string | null;
+          qty: number | null;
+          revenue_paisa: number | null;
+          profit_paisa: number | null;
+          sale_count: number | null;
+        }[];
       };
       void_payment: {
         Args: {

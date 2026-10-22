@@ -5,6 +5,24 @@ Rule (PROJECT_RULES 1.9): every non-trivial choice goes here so future phases do
 
 ---
 
+## 2026-10-22 — Phase 7 stock, today & reports
+
+| # | Decision | Reason |
+|---|---|---|
+| 96 | **`stock_movements` gained a `seq` identity column**, and the movement history sorts by it instead of by `occurred_at`. | `occurred_at` defaults to `now()` = transaction start, so a sale's stock line and a manual adjustment in the same transaction tie. Insertion order is the only honest order for an append-only table (the same fix 0014 made for the ledger). |
+| 97 | **`list_stock` sorts by severity — out of stock first, then low, then name — rather than by name.** | The screen exists to answer "কী শেষ হয়ে যাচ্ছে"; alphabetical order buries exactly the rows the shopkeeper came for. |
+| 98 | **Stock value (quantity × cost) is `NULL` for a cashier, not 0.** | The column grant in 0012 already hides cost. A 0 would read as "the shelf is worth nothing", which is a confident lie; `NULL` renders as "—". |
+| 99 | **No "set stock to N" field.** Every manual change is a movement with a reason, typed or picked from নষ্ট / নতুন মাল / ফেরত / গণনা মিলছে না. | A storekeeper who finds 3 kg where the book says 5 is recording a difference. Without the reason the history explains nothing six months later. |
+| 100 | **A movement in the wrong direction is corrected by another movement**, never by deleting the first. | Same rule as the ledger and the sales: append-only, so an offline sync can never conflict and an audit can always be rebuilt. |
+| 101 | **`tenant_day_summary()` was rewritten in 0016** (it predates the void marker and compared `received_at` against a UTC midnight). | A collection taken at 11 pm Dhaka was landing on the next day, and a reversed collection was still counted as money in the drawer. Replacing the function keeps one API instead of two that disagree. |
+| 102 | **Only stand-alone payments (`sale_id is null`) count as "collected today".** | The money taken at checkout is already inside `sales_paisa`; counting the payment row again would double the day's takings. |
+| 103 | **Profit is computed per line (`line_total − cost × qty`) and summed, in its own query.** | Joining `sales` to `sale_items` and summing `total_paisa` multiplies every sale by its line count. The two aggregates are deliberately separate subqueries. |
+| 104 | **Reports return per-day rows, and the client sums the range.** | One query per range, easy to test, and the daily bars need the rows anyway. A separate "totals" RPC would be a second implementation of the same arithmetic. |
+| 105 | **No chart library.** The bars are `<button>`s with a CSS height. | Thirty bars of one value do not justify ~90 kB of JavaScript on a 3G phone; buttons are also tappable and keyboard-readable for free. Revisit if a real chart (multi-series, zoom) is ever needed. |
+| 106 | **`sales_report` and `top_products` raise `forbidden` for a cashier**, and `/reports` is behind `RequireRole`. | Profit is management information; the guard is in the database first and the UI second. |
+| 107 | **The home dashboard reuses the same hooks as আজকের হিসাব and স্টক.** | One query, one cache, one number. A dashboard that disagrees with the screen it links to destroys trust faster than a wrong colour. |
+| 108 | **The reports screen offers today / 7 days / 30 days**, with a custom range deferred. | Three buttons cover how a small shop reviews a week or a month; a date picker adds taps and edge cases that Phase 10 (with export) can absorb. |
+
 ## 2026-10-22 — Phase 6 dues & customers
 
 | # | Decision | Reason |

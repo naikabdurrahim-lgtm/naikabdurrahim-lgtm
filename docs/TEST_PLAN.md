@@ -14,6 +14,9 @@
 | Catalogue access | SQL (scripted) | cost column unreadable by any client role, cost masked in the RPC, Bangla/English/barcode search, paging, low-stock filter, category counts | ✅ `60_catalog.sql` — 35 assertions |
 | POS sales | SQL (scripted) | fractional quantities, percent discount, credit + ledger, cashier price/discount limits, receipt view vs cost table, void restores stock and due | ✅ `70_pos.sql` — 17 assertions |
 | Sync support | SQL (scripted) | monotonic `updated_at`, soft deletes, audit of overwrites, append-only telemetry | ✅ `40_sync_and_audit.sql` — 11 assertions |
+| Due ledger | SQL (scripted) | running balance by `seq`, payment/void pair, overpayment refused, cross-tenant collection refused, soft-deleted customer keeps the khata history | ✅ `80_customers.sql` — 28 assertions |
+| Stock & reports | SQL (scripted) | stock derived from movements, cost hidden from a cashier, reason-required adjustments, day summary (business date, voids excluded), range report, top products | ✅ `100_stock_reports.sql` — 35 assertions |
+| POS payload | SQL (scripted) | "1.500" kg, percent discount, part payment, two cashier refusals, receipt view, void restores stock and khata | ✅ `110_pos.sql` — 14 assertions |
 | End-to-end | Playwright | onboarding → sale → due → collect → dashboard; offline sale then reconnect | Phase 6–9 (Playwright cannot run in this environment) |
 
 ## Manual (each phase)
@@ -273,3 +276,55 @@ Manual (needs the Supabase project from `.env`):
    Bangla refusal rather than a Postgres message.
 10. Add a customer with only a name — it saves. Add another with the same phone
     number — the form explains the duplicate instead of failing silently.
+
+## Phase 7 specific (stock, today & reports)
+
+Automated:
+
+- [x] `npm test` — 34 files, 380 tests, including `features/stock/api.test.ts`
+      (numeric strings → thousandths, null cost for a cashier, signed
+      fixed-decimal payload, reason/forbidden error codes),
+      `features/stock/components/MovementSheet.test.tsx` (in/out sign, default
+      reason, a typed note wins, empty quantity never reaches the server),
+      `features/stock/pages/StockPage.test.tsx` (counts and value, out/low
+      badges, owner-only adjust button, filter passes through, skeletons, retry),
+      `features/reports/api.test.ts` (null profit survives, Dhaka range maths,
+      day rows, top products, forbidden code) and `app/pages/HomePage.test.tsx`
+      (four Simple-Mode actions, real dashboard numbers, collections instead of
+      profit for a cashier, low-stock nudge only when needed, no fake ৳০).
+- [x] `supabase/tests/100_stock_reports.sql` — 35 assertions: stock value at cost,
+      service products excluded, low/out counts, `list_stock` order and filters,
+      search, a movement without a reason refused, damage reduces stock, the
+      movement history's running quantity (page 2 keeps the whole-history
+      balance), today's sales/profit/collections vs yesterday's credit,
+      `recent_sales` line count and order, `sales_report` totals and profit,
+      `top_products` ranking, a cashier gets no profit and no cost and cannot
+      change stock or read reports, an outsider is refused everywhere, and a
+      voided sale leaves the takings, the report and the low-stock count.
+- [x] `supabase/tests/110_pos.sql` — 14 assertions: the exact payload shape the
+      sell screen sends (1.5 kg as a string, a 10% discount, a part payment that
+      leaves a due), both cashier refusals, and the void that follows.
+- [x] `npm run typecheck`, `npm run lint`, `npm run build`.
+
+Manual (needs the Supabase project from `.env`):
+
+1. As owner open **স্টক**: the tiles show products / running low / finished /
+   stock value, and the finished product is the first row.
+2. Tap **+** on a row, choose **মাল এসেছে**, type 10 and save: the row's quantity
+   and the stock value change, and the product's history shows the movement.
+3. Choose **মাল বের হলো → নষ্ট হয়েছে** and save without a note: the movement is
+   recorded as damage. Try saving with a quantity of 0: the sheet refuses before
+   the server is touched.
+4. Open a product's history: every movement, newest first, with the balance after
+   each one — a sale, a purchase and a damage interleaved correctly.
+5. As a cashier: **স্টক** is readable, the **+** buttons are gone, and the stock
+   value tile shows **—** rather than ৳0.
+6. Open **আজকের হিসাব**: sales, collected, credit and (as owner) profit; the
+   bills list matches, and a cancelled bill appears struck through.
+7. As a cashier, the profit tile is absent and **রিপোর্ট** is not navigable.
+8. Open **রিপোর্ট**, switch ৭ দিন / ৩০ দিন: totals, the day bars (tap one to see
+   its amount) and the best sellers all change together.
+9. Sell something at 11:50 pm Dhaka time and check **আজকের হিসাব** after
+   midnight: the sale belongs to the day it was made (business date), and a due
+   collected just after midnight counts as today's collection.
+

@@ -5,12 +5,16 @@ import bnCommon from '@/locales/bn/common.json';
 import bnCustomers from '@/locales/bn/customers.json';
 import bnOnboarding from '@/locales/bn/onboarding.json';
 import bnPos from '@/locales/bn/pos.json';
+import bnReports from '@/locales/bn/reports.json';
+import bnStock from '@/locales/bn/stock.json';
 import bnProducts from '@/locales/bn/products.json';
 import enAuth from '@/locales/en/auth.json';
 import enCommon from '@/locales/en/common.json';
 import enCustomers from '@/locales/en/customers.json';
 import enOnboarding from '@/locales/en/onboarding.json';
 import enPos from '@/locales/en/pos.json';
+import enReports from '@/locales/en/reports.json';
+import enStock from '@/locales/en/stock.json';
 import enProducts from '@/locales/en/products.json';
 
 export const SUPPORTED_LANGUAGES = ['bn', 'en'] as const;
@@ -23,7 +27,16 @@ export const DEFAULT_LANGUAGE: AppLanguage = 'bn';
  * module gets loaded eagerly for now: the whole set is a few kB and offline
  * start-up must never wait on a chunk.
  */
-export const NAMESPACES = ['common', 'auth', 'onboarding', 'products', 'pos', 'customers'] as const;
+export const NAMESPACES = [
+  'common',
+  'auth',
+  'onboarding',
+  'products',
+  'pos',
+  'customers',
+  'stock',
+  'reports',
+] as const;
 export type AppNamespace = (typeof NAMESPACES)[number];
 
 export const resources = {
@@ -34,6 +47,8 @@ export const resources = {
     products: bnProducts,
     pos: bnPos,
     customers: bnCustomers,
+    stock: bnStock,
+    reports: bnReports,
   },
   en: {
     common: enCommon,
@@ -42,6 +57,8 @@ export const resources = {
     products: enProducts,
     pos: enPos,
     customers: enCustomers,
+    stock: enStock,
+    reports: enReports,
   },
 } as const;
 

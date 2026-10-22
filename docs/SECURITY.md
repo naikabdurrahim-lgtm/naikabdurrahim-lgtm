@@ -58,6 +58,15 @@ Checked at the end of every phase. Items marked **[P1]** are done in Phase 1; th
 - [x] **[P6]** The customer form validates phone (BD mobile, normalised to E.164) and money (integer paisa) on the client; the CHECK constraints remain the source of truth.
 - [ ] **[P10]** A permanent payment reversal (outside the ten-minute window) should require an audit entry and an owner-only confirmation screen.
 
+## Stock & reports (Phase 7)
+- [x] **[P7]** Every stock/report read is a `security definer` function that checks membership itself; `execute` is revoked from `public`.
+- [x] **[P7]** Cost and stock value are returned as `NULL` to a cashier — the same rule as `search_products` (0012), enforced in SQL rather than by hiding a card.
+- [x] **[P7]** `sales_report()` and `top_products()` raise `forbidden` for a cashier; `/reports` is additionally behind `RequireRole`.
+- [x] **[P7]** Stock changes go through `record_stock_movement()` only (owner/manager, reason required, non-zero quantity, never on a service product). There is no update path to `stock_movements`.
+- [x] **[P7]** The stock list is a derived read; `products.stock_qty` is a cache kept in step by trigger and checked against the movement sum by `30_integrity.sql`.
+- [x] **[P7]** Report ranges are bounded by the server (`p_from`/`p_to` are dates; `p_to < p_from` is refused) and row counts are clamped.
+- [x] **[P7]** `recent_sales()` returns no cost and is safe for every role; profit never appears in it.
+
 ## Input validation (Phase 2+)
 - [x] **[P3]** Phone numbers normalised to E.164 before any use (`normaliseBdPhone`); invalid numbers never reach the server.
 - [x] **[P4]** Zod on the client for the product and category forms (Bangla messages from the locale files, never raw Postgres text).

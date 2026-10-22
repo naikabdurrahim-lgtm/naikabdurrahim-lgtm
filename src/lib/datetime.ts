@@ -35,8 +35,20 @@ function present(value: string, formatter: Intl.DateTimeFormat, numerals: Numera
   return numerals === 'bn' ? toBanglaDigits(text) : text;
 }
 
+const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: SHOP_TIME_ZONE,
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true,
+});
+
 export function formatDhakaDate(iso: string, numerals: Numerals = 'bn'): string {
   return present(iso, dateFormatter, numerals);
+}
+
+/** Just the clock time, for a list of today's bills. */
+export function formatDhakaTime(iso: string, numerals: Numerals = 'bn'): string {
+  return present(iso, timeFormatter, numerals);
 }
 
 export function formatDhakaDateTime(iso: string, numerals: Numerals = 'bn'): string {

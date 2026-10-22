@@ -117,8 +117,8 @@ the ones before it.
 ## 8. Local database testing
 
 `npm run db:test` creates a scratch database, applies every migration in order, then
-runs eight suites (isolation, roles, integrity, sync/audit, auth hardening,
-catalogue, POS, schema guards). It runs in CI against a `postgres:16` service. See `scripts/setup-db.md`.
+runs eleven suites (isolation, roles, integrity, sync/audit, auth hardening,
+catalogue, POS, customers, stock/reports, POS payload, schema guards). It runs in CI against a `postgres:16` service. See `scripts/setup-db.md`.
 
 `scripts/generate-types.py` rebuilds `src/lib/supabase/database.types.ts` from that
 same scratch database (`npm run db:types`): tables, views, enums, FK relationships
@@ -247,3 +247,32 @@ SellPage
   minutes, owners and managers at any time.
 - **Error codes, not SQL**: `CustomerApiError` / `LedgerApiError` map to
   `customers:*` keys, so a refusal reads as a sentence in Bangla or English.
+
+## 14. Stock, today and reports (Phase 7)
+
+```
+/stock              StockPage
+ ├─ stock_overview()        counts + value (value NULL for a cashier)
+ ├─ list_stock(filter)      out → low → name
+ └─ MovementSheet → record_stock_movement()   reason required, append-only
+/stock/:productId   ProductStockPage
+ └─ product_stock_movements()  running quantity over the whole history
+/today              TodayPage
+ ├─ tenant_day_summary()    sales, credit, collected, profit (NULL for a cashier)
+ └─ recent_sales()          today's bills → /sell/receipt/:id
+/reports            ReportsPage (owner/manager)
+ ├─ sales_report(from, to)  per-day rows; the client sums the range
+ ├─ top_products(from, to)  best sellers by revenue
+ └─ DailyBars               buttons + CSS heights, no chart library
+```
+
+- **Derived, never cached**: stock on hand is the sum of `stock_movements`
+  (verified against the cache column in the SQL suite), and every report is
+  computed from `sales` / `sale_items` / `payments` at read time.
+- **Profit is a permission, not a number**: the functions return `NULL` for a
+  cashier, so the UI cannot accidentally print a zero instead of "not allowed".
+- **Voided sales** are excluded from takings, credit and profit, but stay visible
+  in `recent_sales` with a struck-through amount.
+- **Two aggregates, never one join**: sale-level totals and line-level profit are
+  separate subqueries; joining them would multiply totals by line count.
+

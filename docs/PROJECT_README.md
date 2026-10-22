@@ -11,10 +11,11 @@
 | Phase | Scope | State |
 |---|---|---|
 | 1 | Setup: Vite + React + TS + Tailwind, tokens, themes, i18n, app shell, health check, CI | ✅ done |
-| 2 | Database: 19 tables, constraints, append-only guards, RLS on every table, write RPCs, 109 SQL assertions | ✅ done |
+| 2 | Database: 20 tables, constraints, append-only guards, RLS on every table, write RPCs, 109 SQL assertions | ✅ done |
 | 3 | Auth & onboarding: phone + PIN, lockout, recovery code, four-step onboarding, six business packs | ✅ done |
 | 4 | Products & categories: paged search RPC, cost hidden from staff, add/edit/delete with undo, category sheet | ✅ done |
-| 5–12 | POS → due ledger → stock/reports → packs → offline sync → staff/audit → AI → Android/launch | next: 5 |
+| 5 | POS: product grid, barcode entry, fractional quantities, discounts, cash/credit, receipt, 10 s undo | ✅ done |
+| 6–12 | Due ledger → stock/reports → packs → offline sync → staff/audit → AI → Android/launch | next: 6 |
 
 The folder scaffold for every upcoming phase already exists, so later work adds files rather than restructuring.
 
@@ -50,7 +51,7 @@ Supabase is optional in Phase 1: without `.env` values the app still runs and `/
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | Vitest unit tests |
 | `npm run format` | Prettier write |
-| `npm run db:test` | Apply migrations to a scratch PostgreSQL and run the 7 SQL suites |
+| `npm run db:test` | Apply migrations to a scratch PostgreSQL and run the 8 SQL suites |
 | `npm run db:types` | Regenerate `database.types.ts` from the live schema |
 
 ---

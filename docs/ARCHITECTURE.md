@@ -117,8 +117,8 @@ the ones before it.
 ## 8. Local database testing
 
 `npm run db:test` creates a scratch database, applies every migration in order, then
-runs six suites (isolation, roles, integrity, sync/audit, auth hardening, schema
-guards). It runs in CI against a `postgres:16` service. See `scripts/setup-db.md`.
+runs eight suites (isolation, roles, integrity, sync/audit, auth hardening,
+catalogue, POS, schema guards). It runs in CI against a `postgres:16` service. See `scripts/setup-db.md`.
 
 `scripts/generate-types.py` rebuilds `src/lib/supabase/database.types.ts` from that
 same scratch database (`npm run db:types`): tables, views, enums, FK relationships
@@ -194,3 +194,27 @@ ProductFormPage ── zodResolver(buildProductFormSchema(t))
   text ever reaching the user.
 - **Money and quantity never touch a float**: the form holds strings, `schema.ts`
   converts once, and the API stores integer paisa and `numeric(14,3)`.
+
+## 12. Selling (Phase 5)
+
+```
+SellPage
+ ├─ ProductPicker ── usePosProducts ── search_products(…, p_include_inactive => false)
+ ├─ useCart ── cart.ts (pure: add/step/setQty/price/discount/credit)
+ │      └─ computeTotals → subtotal, discount, total, paid, due, change
+ ├─ LineSheet (Radix dialog) — quantity presets + price (owner/manager only)
+ └─ PaymentSheet — tendered, method, credit, customer, note
+        └─ toSalePayload → create_sale(p_tenant, p_payload)
+                 └─ invoice no, totals, stock movement, ledger entry  (server)
+```
+
+- **Two sources of truth, on purpose.** `cart.ts` decides what the shopkeeper sees;
+  `create_sale()` decides what is stored. If they disagree the sale is refused, not
+  mis-recorded.
+- **Idempotency**: one `client_id` per attempt, reused when the same bill is
+  retried, so a timeout is never a double sale.
+- **Receipts**: `sales` + `v_sale_items_receipt` (no cost), readable by every role,
+  so a reprint never becomes a privilege escalation.
+- **Undo**: `void_sale()` with a reason — a reversal record, never a delete.
+- **Phase 9 seam**: the payload builder takes a client id, which is exactly what the
+  offline outbox will store, so a queued sale replays instead of being re-created.

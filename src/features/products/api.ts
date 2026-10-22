@@ -133,7 +133,7 @@ export async function fetchProducts(
     p_tenant: tenantId,
     p_limit: PRODUCT_PAGE_SIZE,
     p_offset: offset,
-    p_include_inactive: true,
+    p_include_inactive: filters.includeInactive ?? true,
     ...(query === '' ? {} : { p_query: query }),
     ...(filters.categoryId ? { p_category: filters.categoryId } : {}),
     ...(filters.lowStock ? { p_low_stock: true } : {}),

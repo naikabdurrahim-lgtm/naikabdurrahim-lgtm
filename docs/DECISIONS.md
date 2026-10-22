@@ -5,6 +5,26 @@ Rule (PROJECT_RULES 1.9): every non-trivial choice goes here so future phases do
 
 ---
 
+## 2026-10-22 — Phase 5 POS
+
+| # | Decision | Reason |
+|---|---|---|
+| 70 | **The POS reads products through the same `search_products()` query as the catalogue**, with `p_include_inactive = false`. | One code path, one cache, server-side search; a discontinued product must never be sold by accident. |
+| 71 | **The bill lives in memory only — no `localStorage`, no Dexie.** | A shared shop phone must not keep yesterday's prices or a half-finished bill. Durable drafts belong to the offline store in Phase 9, keyed per user. |
+| 72 | **The client never writes `sales`, `sale_items`, `payments` or `stock_movements`.** `create_sale()` is the only door. | The server recomputes subtotal, discount, total, due, the invoice number, the stock movement and the ledger entry. A tampered client can change the price it offers, never what is recorded. |
+| 73 | **One `client_id` per submit attempt, reused on retry, discarded after success.** | `create_sale` is idempotent per `client_id`; generating a new one per tap would turn a flaky network into a double sale. |
+| 74 | **An untouched amount field on a cash sale means "paid exactly".** | Otherwise every sale would need the shopkeeper to retype the total, and a forgotten field would silently become credit. Credit is an explicit switch. |
+| 75 | **Quantities go out as fixed 3-decimal strings** (`"1.500"`). | The database column is `numeric(14,3)`; sending a JS float invites `1.4999999`. The cart keeps thousandths and formats once. |
+| 76 | **A percent discount is converted to paisa on the client and stored with `discount_kind = 'percent'`.** | `sales.total_paisa` is generated from paisa only, so the server needs the amount; the kind is kept so the receipt can say "10% off". |
+| 77 | **Only owner/manager can edit a line's price in the UI**; the database additionally refuses below-cost sales by a cashier. | A cashier typing 1 taka instead of 100 is a real risk in a busy shop. The UI prevents it; the server is the second line of defence. |
+| 78 | **Receipts are read from `sales` + `v_sale_items_receipt`, never from `sale_items`.** | The view already drops cost price, so a cashier can reprint a receipt without seeing what the shop paid. |
+| 79 | **The customer picker lives inside the sale, and can create a customer inline.** | "রহিম ভাই, ০১৭…" is the normal case at the counter; sending the cashier to another screen would abandon the bill. Phase 6 grows this into the full customer screen. |
+| 80 | **Undo is a `void_sale()` with a required reason, shown for 10 seconds, owner/manager only.** | PROJECT_RULES 3.1 #10 requires a 10-second undo and the ledger must stay append-only, so undo is a reversal, not a delete. A cashier sees no undo button because the database would refuse it. |
+| 81 | **Sheets are Radix Dialog, not a hand-rolled modal.** | Focus trap, Escape, `aria-modal` and scroll lock are security and accessibility details worth a 12 kB dependency. |
+| 82 | **Vendor chunks are split in `vite.config.ts`** (`react`, `supabase`, `forms`, `i18n`). | The single bundle crossed 900 kB and warned; splitting keeps our code cacheable separately and removes the warning without hiding it. |
+| 83 | **`0013_audit_entity_id.sql` fixes `app.log_audit()` for tables without an `id` column.** | Found by this phase: `app_settings` is keyed by `tenant_id`, so an owner changing shop settings hit `record "new" has no field "id"`. The Phase 2 tests missed it because the only settings update there was a cashier's, refused by RLS before the trigger ran. |
+| 84 | **Phase 5 needs a connection.** Offline selling arrives in Phase 9 with the outbox; until then the screen says so instead of pretending. | Selling offline without the queue would either lose the sale or duplicate it on reconnect. Saying it out loud beats silent data loss. |
+
 ## 2026-10-22 — Phase 4 products & categories
 
 | # | Decision | Reason |

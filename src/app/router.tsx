@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { BarChart3, Boxes, ShoppingCart, Users, Wallet } from 'lucide-react';
+import { BarChart3, Boxes, Users, Wallet } from 'lucide-react';
 import { AppShell } from '@/app/layout/AppShell';
 import { HomePage } from '@/app/pages/HomePage';
 import { HealthPage } from '@/app/pages/HealthPage';
@@ -12,6 +12,8 @@ import { RequireShop } from '@/features/auth/components/RequireShop';
 import { SignInPage } from '@/features/auth/pages/SignInPage';
 import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage';
+import { SellPage } from '@/features/pos/pages/SellPage';
+import { SaleReceiptPage } from '@/features/pos/pages/SaleReceiptPage';
 import { ProductsPage } from '@/features/products/pages/ProductsPage';
 import { ProductFormPage } from '@/features/products/pages/ProductFormPage';
 import { CategoriesPage } from '@/features/products/pages/CategoriesPage';
@@ -46,8 +48,13 @@ export const router = createBrowserRouter([
               { index: true, element: <HomePage /> },
               { path: 'settings', element: <SettingsPage /> },
               {
+                // Selling is open to every role (RLS decides what a cashier may
+                // do with a discount or a void), so no RequireRole here.
                 path: 'sell',
-                element: <ModulePlaceholder icon={ShoppingCart} titleKey="nav.sell" phase={5} />,
+                children: [
+                  { index: true, element: <SellPage /> },
+                  { path: 'receipt/:saleId', element: <SaleReceiptPage /> },
+                ],
               },
               {
                 path: 'due',

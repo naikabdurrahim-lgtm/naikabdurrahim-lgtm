@@ -30,6 +30,18 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: false,
+    // Route-level lazy loading is a Phase 12 concern; until then the vendors are
+    // split so a change to our own code does not invalidate their cache.
     chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          supabase: ['@supabase/supabase-js'],
+          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
+          i18n: ['i18next', 'react-i18next'],
+        },
+      },
+    },
   },
 });

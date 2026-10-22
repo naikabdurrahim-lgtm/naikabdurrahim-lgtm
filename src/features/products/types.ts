@@ -59,6 +59,11 @@ export type ProductListFilters = {
   categoryId: string | null;
   /** "Running out" chip: only products at or below their alert level. */
   lowStock: boolean;
+  /**
+   * The POS must never offer a discontinued product; the catalogue screen keeps
+   * showing them so the owner can switch one back on. Defaults to true.
+   */
+  includeInactive?: boolean;
 };
 
 export type ProductApiErrorCode =

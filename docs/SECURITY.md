@@ -37,6 +37,16 @@ Checked at the end of every phase. Items marked **[P1]** are done in Phase 1; th
 - [x] **[P4]** All RPC output is parsed with Zod before it reaches a screen: a malformed row becomes one friendly error, not a crash and not a leaked stack trace.
 - [ ] **[P9]** Offline catalogue cache in Dexie must store the **masked** product rows only, so a cashier's device never holds cost data.
 
+## Sales & POS (Phase 5)
+- [x] **[P5]** The client cannot insert a sale. Totals, invoice number, stock movement and ledger entry are computed inside `create_sale()` (security definer, membership-checked).
+- [x] **[P5]** Idempotency: `sales.client_id` is unique per shop, so a retried submit returns the original sale instead of a duplicate. The POS reuses one id per attempt.
+- [x] **[P5]** A cashier cannot sell below cost; the check is server-side (`below_cost_not_allowed`), with the UI limiting price edits to owner/manager.
+- [x] **[P5]** Discounts for cashiers can be switched off per shop (`app_settings.allow_cashier_discount`), enforced inside the RPC, not in the browser.
+- [x] **[P5]** `void_sale()` requires owner/manager **and** a non-empty reason; it reverses stock and the ledger rather than deleting anything.
+- [x] **[P5]** Receipts are read from `sales` + `v_sale_items_receipt` (no cost column). `sale_items` stays invisible to a cashier.
+- [x] **[P5]** The POS never receives or stores `buy_price_paisa`; the sell screen's payload contains only what the shop charges.
+- [ ] **[P9]** Offline sales must keep the same idempotency key from the outbox; a queued sale may only be replayed, never re-created.
+
 ## Input validation (Phase 2+)
 - [x] **[P3]** Phone numbers normalised to E.164 before any use (`normaliseBdPhone`); invalid numbers never reach the server.
 - [x] **[P4]** Zod on the client for the product and category forms (Bangla messages from the locale files, never raw Postgres text).

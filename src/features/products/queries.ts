@@ -31,7 +31,14 @@ import type { ProductInput, ProductListFilters } from './types';
 export const productKeys = {
   all: ['products'] as const,
   list: (tenantId: string, filters: ProductListFilters) =>
-    ['products', tenantId, filters.query, filters.categoryId, filters.lowStock] as const,
+    [
+      'products',
+      tenantId,
+      filters.query,
+      filters.categoryId,
+      filters.lowStock,
+      filters.includeInactive ?? true,
+    ] as const,
   detail: (tenantId: string, productId: string) =>
     ['products', tenantId, 'detail', productId] as const,
   categories: (tenantId: string) => ['categories', tenantId] as const,

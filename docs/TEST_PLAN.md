@@ -12,8 +12,9 @@
 | RLS | SQL (scripted) | cross-tenant read/write must fail; role restrictions | ✅ `10_rls_isolation.sql` (23) + `20_role_permissions.sql` (29) |
 | Schema guards | SQL (scripted) | RLS on every table, tenant_id present, pinned search_path, integer money, no anon RPC access | ✅ `90_schema_guards.sql` — 9 assertions |
 | Catalogue access | SQL (scripted) | cost column unreadable by any client role, cost masked in the RPC, Bangla/English/barcode search, paging, low-stock filter, category counts | ✅ `60_catalog.sql` — 35 assertions |
+| POS sales | SQL (scripted) | fractional quantities, percent discount, credit + ledger, cashier price/discount limits, receipt view vs cost table, void restores stock and due | ✅ `70_pos.sql` — 17 assertions |
 | Sync support | SQL (scripted) | monotonic `updated_at`, soft deletes, audit of overwrites, append-only telemetry | ✅ `40_sync_and_audit.sql` — 11 assertions |
-| End-to-end | Playwright | onboarding → sale → due → collect → dashboard; offline sale then reconnect | Phase 5–9 |
+| End-to-end | Playwright | onboarding → sale → due → collect → dashboard; offline sale then reconnect | Phase 6–9 (Playwright cannot run in this environment) |
 
 ## Manual (each phase)
 
@@ -176,3 +177,47 @@ Manual (needs the Supabase project from `.env`):
     (Phase 5 adds the camera scanner).
 12. Check both languages and Simple/Pro mode: no string is missing, all amounts switch
     to Bangla numerals when the toggle is on.
+
+## Phase 5 specific (POS)
+
+Automated:
+
+- [x] `npm test` — 26 files, 306 tests, including `features/pos/cart.test.ts`
+      (fractional quantities, rounding, discounts, change, credit, payload shape),
+      `features/pos/api.test.ts` (RPC payload, error codes, receipt parsing) and
+      `features/pos/pages/SellPage.test.tsx` (empty state, add, quantity step,
+      payment sheet, credit needs a customer, price field for an owner).
+- [x] `supabase/tests/70_pos.sql` — 1.5 kg totals 112.50 and leaves 18.5 in stock;
+      10% discount; credit writes the due to the ledger; a cashier cannot sell
+      below cost or discount when the shop forbids it; a cashier reads the receipt
+      view but no rows of `sale_items`; void restores stock, clears the due and
+      keeps the sale row.
+- [x] `0013` regression: an owner can change shop settings, and the change lands in
+      `audit_logs`.
+- [x] `npm run typecheck`, `npm run lint`, `npm run build` (5 vendor chunks, no size
+      warning).
+
+Manual (needs the Supabase project from `.env`):
+
+1. Sign in as owner → **বিক্রি**. The product grid shows name, price and stock.
+2. Tap a product twice: one line, quantity 2, total updates.
+3. Tap the quantity → the line sheet opens: presets (০.৫ / ১ / ২ …), type `1.5`,
+   change the price, done. The line total follows.
+4. Press **হিসাব** (mobile tab) → **বিক্রি নিশ্চিত করুন** → the sheet shows the total.
+5. Type `500` in **হাতে নেওয়া টাকা** on a 470 bill → **ফেরত দিন** shows 30 and
+   confirming records paid = 470, change = 30.
+6. Switch **বাকিতে বিক্রি** on: the confirm button disables until a customer is
+   chosen. Pick one, or add "রহিম ভাই / 01712345678" from the sheet.
+7. Confirm → success screen with total, paid, change (or due), invoice number and
+   **ফেরান** counting down from 10.
+8. Tap **ফেরান** within 10 seconds → the receipt opens, marked cancelled, stock is
+   back and the customer's due is gone.
+9. Open **রসিদ** from the success screen: the receipt reads from the database, so a
+   reload or a different device shows the same thing.
+10. Sign in as cashier: the price field is replaced by an explanation, no undo
+    button appears after a sale, and a below-cost price is refused with a Bangla
+    message.
+11. Turn off "cashier may discount" in the shop settings (SQL for now), then try a
+    discount as a cashier → refused with **এই দোকানে ছাড় দেওয়ার অনুমতি আপনার নেই**.
+12. Enter a barcode in the search box and press Enter: the product is added and the
+    box clears, ready for the next scan.

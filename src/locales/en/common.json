@@ -87,7 +87,10 @@
     "step1": "Create a project in Supabase",
     "step2": "Copy the URL and anon key from Project Settings → API",
     "step3": "Put them in the `.env` file",
-    "step4": "Stop and restart the dev server"
+    "step4": "Stop and restart the dev server",
+    "missing": "Still missing:",
+    "recheck": "Check again",
+    "health": "See details"
   },
   "a11y": {
     "skipToContent": "Skip to main content",

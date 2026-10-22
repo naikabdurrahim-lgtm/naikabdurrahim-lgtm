@@ -17,7 +17,12 @@ describe('App shell', () => {
 
     expect(html).toContain('শুরু করার আগে');
     expect(html).toContain('Supabase');
-    expect(html).toContain('সেটিংস');
+    // Two honest ways out: retry, or read the public health check.
+    expect(html).toContain('আবার চেক করুন');
+    expect(html).toContain('/health');
+    // Regression: a Settings button here looped back to this very screen,
+    // because /settings also sits behind RequireAuth.
+    expect(html).not.toContain('href="/settings"');
   });
 });
 

@@ -17,30 +17,35 @@ select tests.eq(
   'RLS is enabled on every table in the public schema'
 );
 
--- Every table in `public` must expose at least one policy (otherwise it is dead
--- weight nobody can read, which usually means someone forgot the policies).
+-- Every table in `public` must expose at least one policy, otherwise it is dead
+-- weight nobody can read — usually a forgotten policy. The only exceptions are
+-- tables that are intentionally service-only and reachable only through
+-- SECURITY DEFINER functions. Any new exception must be added here on purpose.
 select tests.eq(
   (select count(*)
    from pg_class c
    join pg_namespace n on n.oid = c.relnamespace
    where n.nspname = 'public'
      and c.relkind = 'r'
+     and c.relname not in ('auth_attempts')
      and not exists (select 1 from pg_policy p where p.polrelid = c.oid)),
   0::bigint,
-  'every table has at least one policy'
+  'every table has at least one policy, except the documented service-only ones'
 );
 
 -- Every business table carries tenant_id. The only exceptions are:
 --   units    — shared reference vocabulary
 --   tenants  — the root itself (its key IS the tenant id)
---   profiles — one row per auth user, shared across all of their shops
+--   profiles        — one row per auth user, shared across all of their shops
+--   auth_attempts   — keyed by a phone hash, exists before any tenant is known
+--   recovery_codes  — belongs to a user, not to a shop
 select tests.eq(
   (select count(*)
    from pg_class c
    join pg_namespace n on n.oid = c.relnamespace
    where n.nspname = 'public'
      and c.relkind = 'r'
-     and c.relname not in ('units', 'tenants', 'profiles')
+     and c.relname not in ('units', 'tenants', 'profiles', 'auth_attempts', 'recovery_codes')
      and not exists (
        select 1 from pg_attribute a
        where a.attrelid = c.oid and a.attname = 'tenant_id' and not a.attisdropped

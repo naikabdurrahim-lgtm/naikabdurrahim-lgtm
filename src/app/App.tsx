@@ -1,9 +1,10 @@
 import { RouterProvider } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import { usePreferences } from '@/features/settings/preferences';
 import { ErrorBoundary } from '@/app/providers/ErrorBoundary';
 import { PreferencesProvider } from '@/app/providers/PreferencesProvider';
 import { QueryProvider } from '@/app/providers/QueryProvider';
+import { AuthProvider } from '@/features/auth/AuthProvider';
+import { usePreferences } from '@/features/settings/preferences';
 import { router } from '@/app/router';
 
 export function App() {
@@ -13,9 +14,10 @@ export function App() {
     <ErrorBoundary>
       <PreferencesProvider>
         <QueryProvider>
-          <RouterProvider router={router} />
-          {/* Toasts are always dark-friendly and respect the token palette. */}
-          <Toaster position="top-center" closeButton richColors theme={appearance} />
+          <AuthProvider>
+            <RouterProvider router={router} />
+            <Toaster position="top-center" closeButton richColors theme={appearance} />
+          </AuthProvider>
         </QueryProvider>
       </PreferencesProvider>
     </ErrorBoundary>

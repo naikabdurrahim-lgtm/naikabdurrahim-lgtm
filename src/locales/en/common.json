@@ -36,7 +36,8 @@
     "staff": "Staff",
     "settings": "Settings",
     "ai": "Assistant",
-    "more": "More"
+    "more": "More",
+    "onboarding": "Set up shop"
   },
   "home": {
     "greeting": "Welcome",
@@ -75,7 +76,8 @@
     "goHome": "Go home",
     "notFound": "We couldn't find that page.",
     "notFoundHelp": "The address may be wrong, or the page was moved.",
-    "offlineHelp": "No internet. Keep working — it will sync by itself when you're back online."
+    "offlineHelp": "No internet. Keep working — it will sync by itself when you're back online.",
+    "membershipsFailed": "We couldn't load your shop. Check your connection and try again — you do not need to create a new shop."
   },
   "setup": {
     "title": "Before you start",
@@ -143,5 +145,18 @@
   "placeholder": {
     "title": "Coming soon",
     "body": "This area is still being built. It arrives in a later phase."
+  },
+  "account": {
+    "title": "Your account",
+    "shop": "Shop",
+    "switchShop": "Switch shop",
+    "role": "Your role",
+    "roleOwner": "Owner",
+    "roleManager": "Manager",
+    "roleCashier": "Cashier",
+    "signOut": "Log out",
+    "signOutConfirm": "Log out?",
+    "signOutBody": "You will need your phone number and PIN to sign in again.",
+    "notSignedIn": "Not signed in"
   }
 }

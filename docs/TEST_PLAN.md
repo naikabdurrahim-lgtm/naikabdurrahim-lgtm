@@ -71,3 +71,67 @@ What each suite proves, in plain language:
 5. **90_schema_guards** — every table has RLS, every business table has `tenant_id`,
    every `security definer` function pins `search_path`, money columns are integers,
    and anonymous users cannot call any write RPC.
+
+## Phase 3 specific (auth, onboarding, packs)
+
+### Automated
+
+```bash
+npm test          # 20 files, 229 tests
+npm run lint
+npm run typecheck
+npm run build
+npm run db:test   # 6 SQL suites, including 50_auth_hardening.sql
+```
+
+Unit tests added in Phase 3:
+
+- `phone.test.ts` — every way a Bangladeshi number is typed (017…, 8801…, +8801…,
+  Bangla digits, spaces/dashes), rejection of 012 and short numbers, synthetic email
+  round-trip, salted hash stable per phone and different across phones.
+- `pin.test.ts` — accepted PINs, every rejection reason (empty, letters, length,
+  all-same, ascending/descending, leaked list, repeated block, birth year, digits
+  from the owner's own phone), strength bands, confirmation.
+- `recoveryCode.test.ts` — shape `ABCD-EFGH-JKLM`, 32-symbol alphabet (no I/O/0/1),
+  500 draws are unique, tolerant formatting, canonical form for hashing.
+- `authErrors.test.ts` — every failure code has a Bangla and an English sentence,
+  Supabase messages map correctly, technical detail never reaches the screen.
+- `permissions.test.ts` — the role matrix matches the RLS policies, cashier never
+  gets cost/profit/void/staff, unknown role gets nothing.
+- `packs.test.ts` — six packs, unique ids, Bangla labels, starter products have a
+  real category, integer paisa, sell ≥ buy, services have no stock, no duplicates.
+- `navigation.test.ts` — role-filtered nav; a cashier never sees reports.
+- `guards.test.tsx` — RequireAuth (loader / redirect / pass / setup notice),
+  RequireShop (onboarding redirect), RequireRole (cashier sent home).
+- `SignInPage.test.tsx` — button gating, E.164 submit, Bangla error + PIN cleared,
+  lockout banner + disabled PIN, attempts warning, links.
+- `SignUpPage.test.tsx` — weak-PIN reason shown, mismatch blocked, recovery code
+  shown once and stored, continue disabled until acknowledged, duplicate phone.
+- `OnboardingPage.test.tsx` — four steps, nothing written until the last button,
+  select-all/clear, back preserves input, error message, no duplicate shop when
+  only the starter products fail.
+- `api.test.ts` — `create_tenant` args, category mapping, opening stock as a
+  movement, restaurant gets no stock, movement failure is non-fatal.
+- `PinInput.test.tsx` — six 56px boxes, one-digit-at-a-time entry, paste, letters
+  ignored, Backspace behaviour, invalid state exposed via `aria-invalid`.
+- `uiKeys.test.ts` — every `t('…')` key in the source exists in bn and en.
+
+### Manual (the parts jsdom cannot see)
+
+1. `npm run dev`, open the printed URL.
+2. Without `.env`: the setup notice explains what is missing, with a link to
+   Settings. No white screen.
+3. With a Supabase project and `0011` pushed: `/sign-up` → name, phone, PIN
+   `482915`, confirm → the recovery code appears once, **Continue is disabled
+   until the checkbox is ticked** → onboarding.
+4. Onboarding: choose মুদি দোকান → shop name → starter products (all preselected,
+   clear-all works) → simple/pro mode, Bangla/English numerals, language →
+   "দোকান তৈরি করুন". You land on the dashboard with the shop name in the header.
+5. Sign out, sign in with the same phone and PIN. A wrong PIN shows a Bangla
+   sentence, clears the six boxes and keeps the phone number.
+6. Five wrong PINs in a row → the lockout banner with a live countdown; the PIN
+   boxes are disabled. (Wait out 15 minutes, or clear `auth_attempts` in the
+   Supabase SQL editor on a test project.)
+7. `/reports` as a cashier: the tab is hidden, and the URL redirects home.
+8. Rotate the phone to 360 px: all primary buttons stay ≥ 48 px, the bottom bar
+   shows five slots in Simple Mode.

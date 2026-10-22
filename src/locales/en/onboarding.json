@@ -1,0 +1,43 @@
+{
+  "title": "Set up your shop",
+  "step": "Step {{current}} of {{total}}",
+  "businessType": {
+    "title": "What kind of shop do you have?",
+    "hint": "Pick the closest one — you can change it later"
+  },
+  "shopName": {
+    "title": "What is your shop called?",
+    "hint": "This name appears on receipts",
+    "placeholder": "e.g. Rahim Store",
+    "ownerLabel": "Your name",
+    "ownerHint": "Optional — you can change it later in settings"
+  },
+  "sampleProducts": {
+    "title": "Add starter products",
+    "hint": "Pick from this list, or add your own later",
+    "selectAll": "Select all",
+    "clearAll": "None",
+    "selected": "{{count}} products selected",
+    "skip": "I'll add them later",
+    "priceHint": "Selling price"
+  },
+  "preferences": {
+    "title": "Last step",
+    "hint": "Choose how you want to use the app",
+    "modeTitle": "App mode",
+    "numeralsTitle": "Numbers",
+    "languageTitle": "Language"
+  },
+  "create": "Create shop",
+  "creating": "Creating your shop…",
+  "created": "Shop created",
+  "back": "Back",
+  "next": "Next",
+  "finish": "Get started",
+  "errors": {
+    "create_failed": "The shop was not created. Check your connection and try again.",
+    "products_failed": "The shop is ready, but the starter products were not added. You can add them from the stock screen.",
+    "not_configured": "No database connection. Check settings.",
+    "unknown": "Something went wrong. Please try again."
+  }
+}

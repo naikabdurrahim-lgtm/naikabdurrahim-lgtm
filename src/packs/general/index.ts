@@ -1,0 +1,66 @@
+import type { BusinessPack } from '../types';
+
+/** অন্যান্য — generic products, no special modules. */
+export const generalPack: BusinessPack = {
+  id: 'general',
+  labelBn: 'অন্যান্য দোকান',
+  labelEn: 'Other shop',
+  hintBn: 'যেকোনো পণ্য বিক্রি',
+  hintEn: 'Any kind of product',
+  icon: 'store',
+  tone: 'slate',
+  terminology: { product: 'পণ্য', products: 'পণ্য', sale: '' },
+  defaultCategories: [
+    { nameBn: 'প্রধান পণ্য', nameEn: 'Main', icon: 'package' },
+    { nameBn: 'অন্যান্য', nameEn: 'Others', icon: 'package' },
+  ],
+  defaultUnits: ['piece', 'packet', 'dozen', 'box', 'kg'],
+  modules: ['barcode'],
+  sampleProducts: [
+    {
+      nameBn: 'খাতা',
+      nameEn: 'Notebook',
+      categoryBn: 'প্রধান পণ্য',
+      unit: 'piece',
+      buyPaisa: 3000,
+      sellPaisa: 5000,
+      stockMilli: 20000,
+    },
+    {
+      nameBn: 'কলম',
+      nameEn: 'Pen',
+      categoryBn: 'প্রধান পণ্য',
+      unit: 'piece',
+      buyPaisa: 500,
+      sellPaisa: 1000,
+      stockMilli: 50000,
+    },
+    {
+      nameBn: 'মোবাইল চার্জার',
+      nameEn: 'Phone charger',
+      categoryBn: 'প্রধান পণ্য',
+      unit: 'piece',
+      buyPaisa: 25000,
+      sellPaisa: 40000,
+      stockMilli: 6000,
+    },
+    {
+      nameBn: 'ইয়ারফোন',
+      nameEn: 'Earphones',
+      categoryBn: 'প্রধান পণ্য',
+      unit: 'piece',
+      buyPaisa: 12000,
+      sellPaisa: 20000,
+      stockMilli: 8000,
+    },
+    {
+      nameBn: 'টর্চ লাইট',
+      nameEn: 'Torch light',
+      categoryBn: 'অন্যান্য',
+      unit: 'piece',
+      buyPaisa: 18000,
+      sellPaisa: 28000,
+      stockMilli: 4000,
+    },
+  ],
+};

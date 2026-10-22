@@ -16,14 +16,19 @@ Checked at the end of every phase. Items marked **[P1]** are done in Phase 1; th
 - [x] **[P1]** Only `VITE_*` variables reach the browser; the anon key is the only Supabase credential in the client.
 - [x] **[P1]** CI secret scan with `gitleaks`.
 
-## Authentication (Phase 3)
-- [ ] Phone + 6-digit PIN via synthetic email; PIN never stored client-side.
-- [ ] Server-side rate limit and lockout (5 failures → 15-minute lock, exponential).
-- [ ] Reject weak PINs (sequential, repeated, 123456, 000000, birth-year patterns).
-- [ ] Optional upgrade to a real password; recovery flow documented and approved.
-- [ ] Tokens stored in memory + secure storage on Android; no tokens in `localStorage` where avoidable.
+## Authentication
+- [x] **[P3]** Phone + 6-digit PIN via synthetic email (`8801XXXXXXXXX@phone.dokanbondhu.local`); PIN lives only in React state during submit, never in storage or logs.
+- [x] **[P3]** Server-side rate limit and lockout in `0011_auth_hardening.sql`: 5 failures / 15 min → 15-minute lock, 10 failures / 1 hour → 1-hour lock. Asserted by `50_auth_hardening.sql`.
+- [x] **[P3]** Weak PINs rejected client-side before submit: all-same, ascending/descending runs, 30 leaked PINs, repeated blocks, birth years 1960–2039, and digits from the user's own phone number.
+- [x] **[P3]** Recovery flow: 12-symbol code (60 bits) shown once at signup, stored only as a SHA-256 hash, single-use, alphabet excludes I/O/0/1. `set_recovery_code` / `consume_recovery_code` in `0011`, called from `authService.saveRecoveryCode`.
+- [x] **[P3]** Attempt log stores only `sha256("phone:v1:" + e164)` — no phone number in `auth_attempts`.
+- [x] **[P3]** `is_phone_available()` lets signup refuse a taken number without leaking an account's existence beyond that single boolean.
+- [ ] **[P12]** Tokens stored in memory + secure storage on Android; see `@capacitor/preferences` note in Phase 12. On the web, `supabase-js` keeps the session in `localStorage`, which is the accepted trade-off for a PWA (XSS is mitigated by CSP in Phase 12 and by never rendering untrusted HTML).
+- [ ] **[P10] Self-service PIN reset.** Today the recovery code is proof-of-ownership that support verifies by hand (the sign-in screen says so). A real reset needs an admin/service-role action, which must never run in a browser; Phase 10 adds a request queue processed by an operator, or a Supabase Edge Function. **This is a known limitation, stated in the UI rather than hidden.**
+- [ ] **[P12]** Optional upgrade to a real password for owners who want one (the `authService` interface already isolates this).
 
 ## Input validation (Phase 2+)
+- [x] **[P3]** Phone numbers normalised to E.164 before any use (`normaliseBdPhone`); invalid numbers never reach the server.
 - [ ] Zod on the client for UX, CHECK constraints + RPC validation in Postgres for truth.
 - [ ] Numeric bounds: prices ≥ 0, discount ≤ subtotal, quantity > 0, `text` length caps.
 - [ ] Parameterised queries only (Supabase client / RPC); no string-built SQL.

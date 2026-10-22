@@ -1,13 +1,16 @@
 /**
  * Database types for the Supabase schema in `supabase/migrations`.
  *
- * Generated from the live schema so the shape always matches the migrations.
- * Regenerate after any schema change with:
+ * GENERATED FILE — do not edit by hand. Regenerate with:
  *
- *     npm run db:types        # needs the Supabase CLI and SUPABASE_PROJECT_ID
+ *     python3 scripts/generate-types.py <postgres-dsn>
  *
- * Generated columns (totals, invoice number, search vector) appear in Row only:
- * they can never be written by the client.
+ * or, with the Supabase CLI linked to a project:
+ *
+ *     npm run db:types
+ *
+ * Generated columns (totals, invoice number, search vector) appear in Row
+ * only: the client can never write them.
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -49,7 +52,22 @@ export type Database = {
           allow_cashier_discount?: boolean;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'app_settings_default_unit_fkey';
+            columns: ['default_unit'];
+            isOneToOne: false;
+            referencedRelation: 'units';
+            referencedColumns: ['code'];
+          },
+          {
+            foreignKeyName: 'app_settings_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       audit_logs: {
         Row: {
@@ -83,6 +101,41 @@ export type Database = {
           entity_id?: string | null;
           before_data?: Json | null;
           after_data?: Json | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'audit_logs_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      auth_attempts: {
+        Row: {
+          id: string;
+          phone_hash: string;
+          success: boolean;
+          ip_hash: string | null;
+          user_agent: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          phone_hash: string;
+          success: boolean;
+          ip_hash?: string | null;
+          user_agent?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          phone_hash?: string;
+          success?: boolean;
+          ip_hash?: string | null;
+          user_agent?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -127,7 +180,15 @@ export type Database = {
           created_by?: string | null;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'categories_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       customers: {
         Row: {
@@ -172,7 +233,15 @@ export type Database = {
           created_by?: string | null;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'customers_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       ledger_entries: {
         Row: {
@@ -217,7 +286,22 @@ export type Database = {
           created_by?: string | null;
           client_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'ledger_entries_customer_fkey';
+            columns: ['tenant_id', 'customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'customers';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'ledger_entries_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       payments: {
         Row: {
@@ -262,7 +346,29 @@ export type Database = {
           created_at?: string;
           created_by?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'payments_customer_fkey';
+            columns: ['tenant_id', 'customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'customers';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'payments_sale_fkey';
+            columns: ['tenant_id', 'sale_id'];
+            isOneToOne: false;
+            referencedRelation: 'sales';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'payments_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       product_batches: {
         Row: {
@@ -313,7 +419,36 @@ export type Database = {
           created_by?: string | null;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'product_batches_product_fkey';
+            columns: ['tenant_id', 'product_id'];
+            isOneToOne: false;
+            referencedRelation: 'products';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'product_batches_supplier_fkey';
+            columns: ['tenant_id', 'supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'product_batches_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'product_batches_variant_fkey';
+            columns: ['tenant_id', 'variant_id'];
+            isOneToOne: false;
+            referencedRelation: 'product_variants';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+        ];
       };
       product_variants: {
         Row: {
@@ -367,7 +502,22 @@ export type Database = {
           created_by?: string | null;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'product_variants_product_fkey';
+            columns: ['tenant_id', 'product_id'];
+            isOneToOne: false;
+            referencedRelation: 'products';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'product_variants_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       products: {
         Row: {
@@ -440,7 +590,29 @@ export type Database = {
           created_by?: string | null;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'products_category_fkey';
+            columns: ['tenant_id', 'category_id'];
+            isOneToOne: false;
+            referencedRelation: 'categories';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'products_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'products_unit_code_fkey';
+            columns: ['unit_code'];
+            isOneToOne: false;
+            referencedRelation: 'units';
+            referencedColumns: ['code'];
+          },
+        ];
       };
       profiles: {
         Row: {
@@ -476,7 +648,47 @@ export type Database = {
           updated_at?: string;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'profiles_id_fkey';
+            columns: ['id'];
+            isOneToOne: false;
+            referencedRelation: 'auth.users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      recovery_codes: {
+        Row: {
+          id: string;
+          user_id: string;
+          code_hash: string;
+          used_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          code_hash: string;
+          used_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          code_hash?: string;
+          used_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'recovery_codes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'auth.users';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       sale_items: {
         Row: {
@@ -533,7 +745,36 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'sale_items_batch_fkey';
+            columns: ['tenant_id', 'batch_id'];
+            isOneToOne: false;
+            referencedRelation: 'product_batches';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'sale_items_sale_fkey';
+            columns: ['tenant_id', 'sale_id'];
+            isOneToOne: false;
+            referencedRelation: 'sales';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'sale_items_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'sale_items_variant_fkey';
+            columns: ['tenant_id', 'variant_id'];
+            isOneToOne: false;
+            referencedRelation: 'product_variants';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+        ];
       };
       sales: {
         Row: {
@@ -602,7 +843,22 @@ export type Database = {
           updated_at?: string;
           created_by?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'sales_customer_fkey';
+            columns: ['tenant_id', 'customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'customers';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'sales_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       stock_movements: {
         Row: {
@@ -656,7 +912,36 @@ export type Database = {
           created_at?: string;
           created_by?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'stock_movements_batch_fkey';
+            columns: ['tenant_id', 'batch_id'];
+            isOneToOne: false;
+            referencedRelation: 'product_batches';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'stock_movements_product_fkey';
+            columns: ['tenant_id', 'product_id'];
+            isOneToOne: false;
+            referencedRelation: 'products';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+          {
+            foreignKeyName: 'stock_movements_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'stock_movements_variant_fkey';
+            columns: ['tenant_id', 'variant_id'];
+            isOneToOne: false;
+            referencedRelation: 'product_variants';
+            referencedColumns: ['tenant_id', 'id'];
+          },
+        ];
       };
       suppliers: {
         Row: {
@@ -695,7 +980,15 @@ export type Database = {
           created_by?: string | null;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'suppliers_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       sync_events: {
         Row: {
@@ -731,7 +1024,15 @@ export type Database = {
           meta?: Json | null;
           created_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'sync_events_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       tenant_members: {
         Row: {
@@ -770,7 +1071,29 @@ export type Database = {
           updated_at?: string;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'tenant_members_invited_by_fkey';
+            columns: ['invited_by'];
+            isOneToOne: false;
+            referencedRelation: 'auth.users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tenant_members_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tenant_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'auth.users';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       tenants: {
         Row: {
@@ -778,7 +1101,7 @@ export type Database = {
           name: string;
           pack: Database['public']['Enums']['business_pack'];
           owner_id: string;
-          currency: unknown;
+          currency: string;
           timezone: string;
           locale: string;
           is_active: boolean;
@@ -791,7 +1114,7 @@ export type Database = {
           name: string;
           pack?: Database['public']['Enums']['business_pack'];
           owner_id: string;
-          currency?: unknown;
+          currency?: string;
           timezone?: string;
           locale?: string;
           is_active?: boolean;
@@ -804,7 +1127,7 @@ export type Database = {
           name?: string;
           pack?: Database['public']['Enums']['business_pack'];
           owner_id?: string;
-          currency?: unknown;
+          currency?: string;
           timezone?: string;
           locale?: string;
           is_active?: boolean;
@@ -812,7 +1135,15 @@ export type Database = {
           updated_at?: string;
           deleted_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'tenants_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'auth.users';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       units: {
         Row: {
@@ -851,11 +1182,12 @@ export type Database = {
           tenant_id: string;
           customer_id: string;
           name: string;
-          phone: string | null;
-          credit_limit_paisa: number | null;
+          phone: string;
+          credit_limit_paisa: number;
           due_paisa: number;
-          last_activity_at: string | null;
+          last_activity_at: string;
         };
+        Relationships: [];
       };
       v_daily_summary: {
         Row: {
@@ -866,6 +1198,7 @@ export type Database = {
           credit_given_paisa: number;
           profit_paisa: number;
         };
+        Relationships: [];
       };
       v_sale_items_receipt: {
         Row: {
@@ -880,6 +1213,7 @@ export type Database = {
           line_total_paisa: number;
           sort_order: number;
         };
+        Relationships: [];
       };
       v_stock_on_hand: {
         Row: {
@@ -889,34 +1223,135 @@ export type Database = {
           cached_qty: number;
           computed_qty: number;
         };
+        Relationships: [];
       };
     };
     Functions: {
+      auth_lockout_state: {
+        Args: {
+          p_phone_hash: string;
+        };
+        Returns: Json;
+      };
+      collect_due: {
+        Args: {
+          p_tenant: string;
+          p_payload: Json;
+        };
+        Returns: Json;
+      };
+      consume_recovery_code: {
+        Args: {
+          p_user: string;
+          p_code_hash: string;
+        };
+        Returns: boolean;
+      };
+      create_sale: {
+        Args: {
+          p_tenant: string;
+          p_payload: Json;
+        };
+        Returns: Json;
+      };
       create_tenant: {
         Args: {
           p_name: string;
           p_pack?: Database['public']['Enums']['business_pack'];
-          p_owner_display_name?: string | null;
+          p_owner_display_name?: string;
         };
         Returns: Database['public']['Tables']['tenants']['Row'];
       };
-      create_sale: { Args: { p_tenant: string; p_payload: Json }; Returns: Json };
-      collect_due: { Args: { p_tenant: string; p_payload: Json }; Returns: Json };
-      record_stock_movement: { Args: { p_tenant: string; p_payload: Json }; Returns: Json };
-      void_sale: { Args: { p_tenant: string; p_sale_id: string; p_reason: string }; Returns: Json };
-      customer_balance: { Args: { p_tenant: string; p_customer: string }; Returns: number };
-      tenant_day_summary: { Args: { p_tenant: string; p_date?: string }; Returns: Json };
-      is_tenant_member: { Args: { p_tenant: string }; Returns: boolean };
-      has_tenant_role: { Args: { p_tenant: string; p_roles: string[] }; Returns: boolean };
+      customer_balance: {
+        Args: {
+          p_tenant: string;
+          p_customer: string;
+        };
+        Returns: number;
+      };
+      has_tenant_role: {
+        Args: {
+          p_tenant: string;
+          p_roles: Json;
+        };
+        Returns: boolean;
+      };
+      is_phone_available: {
+        Args: {
+          p_phone: string;
+        };
+        Returns: boolean;
+      };
+      is_tenant_member: {
+        Args: {
+          p_tenant: string;
+        };
+        Returns: boolean;
+      };
+      is_tenant_owner: {
+        Args: {
+          p_tenant: string;
+        };
+        Returns: boolean;
+      };
+      purge_old_auth_attempts: {
+        Args: {
+          p_older_than?: Json;
+        };
+        Returns: number;
+      };
+      record_auth_attempt: {
+        Args: {
+          p_phone_hash: string;
+          p_success: boolean;
+          p_ip_hash?: string;
+          p_user_agent?: string;
+        };
+        Returns: Json;
+      };
+      record_stock_movement: {
+        Args: {
+          p_tenant: string;
+          p_payload: Json;
+        };
+        Returns: Json;
+      };
+      set_recovery_code: {
+        Args: {
+          p_code_hash: string;
+        };
+        Returns: undefined;
+      };
+      shares_tenant_with: {
+        Args: {
+          p_user: string;
+        };
+        Returns: boolean;
+      };
+      tenant_day_summary: {
+        Args: {
+          p_tenant: string;
+          p_date?: string;
+        };
+        Returns: Json;
+      };
+      void_sale: {
+        Args: {
+          p_tenant: string;
+          p_sale_id: string;
+          p_reason: string;
+        };
+        Returns: Json;
+      };
     };
     Enums: {
+      business_pack: 'grocery' | 'pharmacy' | 'clothing' | 'restaurant' | 'service' | 'general';
       ledger_entry_type: 'debit' | 'credit';
+      member_role: 'owner' | 'manager' | 'cashier';
       payment_method: 'cash' | 'bkash' | 'nagad' | 'rocket' | 'card' | 'bank' | 'other';
       sale_status: 'completed' | 'voided';
       stock_movement_type:
         'opening' | 'purchase' | 'sale' | 'sale_return' | 'adjustment' | 'damage';
-      member_role: 'owner' | 'manager' | 'cashier';
-      business_pack: 'grocery' | 'pharmacy' | 'clothing' | 'restaurant' | 'service' | 'general';
     };
     CompositeTypes: Record<string, never>;
   };

@@ -70,7 +70,7 @@ A feature never imports another feature's internals.
 
 ## 6. Data model (implemented in Phase 2)
 
-19 tables, all in `supabase/migrations`. Ordered so each migration only depends on
+20 tables, all in `supabase/migrations`. Ordered so each migration only depends on
 the ones before it.
 
 | Migration | Tables |
@@ -85,6 +85,7 @@ the ones before it.
 | 0008 | RLS policies, grants, views |
 | 0009 | RPCs: `create_tenant`, `create_sale`, `collect_due`, `void_sale`, `record_stock_movement`, `customer_balance`, `tenant_day_summary` |
 | 0010 | reference data: units, per-pack default categories |
+| 0011 | `auth_attempts`, `recovery_codes` + lockout / availability / recovery RPCs |
 
 **Invariants enforced by the database**
 
@@ -116,8 +117,13 @@ the ones before it.
 ## 8. Local database testing
 
 `npm run db:test` creates a scratch database, applies every migration in order, then
-runs five suites (isolation, roles, integrity, sync/audit, schema guards). It runs in
-CI against a `postgres:16` service. See `scripts/setup-db.md`.
+runs six suites (isolation, roles, integrity, sync/audit, auth hardening, schema
+guards). It runs in CI against a `postgres:16` service. See `scripts/setup-db.md`.
+
+`scripts/generate-types.py` rebuilds `src/lib/supabase/database.types.ts` from that
+same scratch database (`npm run db:types`): tables, views, enums, FK relationships
+and function signatures. Function return types come from `pg_get_function_result`,
+so an RPC that returns a table row is typed as that row, not as `Json`.
 
 ## 9. Environments
 
@@ -128,3 +134,32 @@ CI against a `postgres:16` service. See `scripts/setup-db.md`.
 | production | static host + PWA (Phase 12) | Supabase project (prod) |
 
 `.env` is git-ignored; `.env.example` documents every key. Frontend keys must start with `VITE_`.
+
+## 10. Authentication & onboarding (Phase 3)
+
+```
+SignInPage / SignUpPage
+   └─ useAuth()  ──  AuthProvider  ──  authService  ──  supabase-js
+                                          │
+                                          ├─ signInWithPin / signUpWithPin
+                                          ├─ getLockoutState / recordAttempt
+                                          └─ saveRecoveryCode
+```
+
+- **Credentials**: phone number + 6-digit PIN. Supabase sees a synthetic email
+  (`8801XXXXXXXXX@phone.dokanbondhu.local`) and the PIN as its password. The phone
+  is the public half, the PIN is the secret; `authService` is the seam that lets a
+  later version switch to real SMS OTP without touching a screen.
+- **Guards**: `RequireAuth` (session) → `RequireShop` (tenant) → `RequireRole`
+  (owner/manager screens). They render a skeleton while loading and a Bangla
+  explanation instead of a dead end.
+- **Role mirror**: `src/lib/permissions.ts` mirrors the RLS matrix so the UI hides
+  what the database would refuse; `navigation.ts` filters the nav by role and mode.
+- **Onboarding**: four screens, all state local. `create_tenant()` creates the shop,
+  the owner membership, settings and pack categories in one transaction; starter
+  products are inserted afterwards as an ordinary RLS-checked write, and their
+  opening stock goes through `record_stock_movement()` (never a direct `stock_qty`).
+  If only the products fail, the user continues to the dashboard with a warning.
+- **Packs**: `src/packs/*` is data only — id, Bangla/English labels, terminology,
+  default categories and units, feature modules, starter products. `getPack()`
+  falls back to `general`, so an unknown pack can never break a screen.

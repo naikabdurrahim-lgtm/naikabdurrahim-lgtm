@@ -3,6 +3,7 @@ import { Languages, Moon, Store, Sun } from 'lucide-react';
 import { SyncStatusPill } from '@/components/common/SyncStatusPill';
 import { Button } from '@/components/ui/button';
 import { usePreferences } from '@/features/settings/preferences';
+import { useAuth } from '@/features/auth/useAuth';
 import { useAppTranslation } from '@/lib/i18n/useAppTranslation';
 import { cn } from '@/lib/utils';
 import { visibleNavItems } from '@/app/navigation';
@@ -18,7 +19,8 @@ export function AppShell() {
   const appearance = usePreferences((s) => s.appearance);
   const setAppearance = usePreferences((s) => s.setAppearance);
 
-  const items = visibleNavItems(mode);
+  const role = useAuth().role;
+  const items = visibleNavItems(mode, role);
   const nextAppearance = appearance === 'light' ? 'dark' : 'light';
 
   return (

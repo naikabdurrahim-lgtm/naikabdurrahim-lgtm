@@ -5,6 +5,31 @@ Rule (PROJECT_RULES 1.9): every non-trivial choice goes here so future phases do
 
 ---
 
+## 2026-10-22 — Phase 3 auth, onboarding, packs
+
+| # | Decision | Reason |
+|---|---|---|
+| 35 | **Login is phone + 6-digit PIN over Supabase email/password with a synthetic address** `8801XXXXXXXXX@phone.dokanbondhu.local`. | The fixed rule (PROJECT_RULES 5.1): Supabase phone OTP needs a paid SMS provider, which is not in the v1 budget. The address is never shown and never receives mail; the PIN is the secret. Documented as a deliberate trade-off, not an accident. |
+| 36 | **The synthetic address keeps all 13 E.164 digits and drops only the `+`.** | Reversible, so any screen can show the phone again; two phones can never collide on one mailbox. |
+| 37 | **The PIN never leaves the device in plain text except to Supabase Auth**, which stores it as a bcrypt hash. No PIN is ever written to localStorage, Dexie or logs. | A PIN is a password. The client keeps it in React state for the duration of the submit call only. |
+| 38 | **PIN policy is enforced client-side (`checkPin`) and rate-limited server-side** (5 failures/15 min → 15 min lock, 10/hour → 1 hour lock). | A 6-digit PIN is only 1M combinations, so lockout is the real security control. The client rule exists to stop a shopkeeper choosing `123456` and blaming the app later. |
+| 39 | **PIN rules return codes, not sentences** (`sequential`, `common`, `birth_year`, …), translated in `auth.pinProblems.*`. | Keeps the domain module free of Bangla text and lets a future language reuse the same checks. |
+| 40 | **Attempt keys are SHA-256 of `phone:v1:<e164>` — the attempt table never stores a phone number.** | A leaked `auth_attempts` table cannot be used to enumerate customers, and the salted prefix prevents matching against a generic phone-hash table. |
+| 41 | **A 12-symbol recovery code (60 bits) is shown once at signup and stored only as a SHA-256 hash.** | Without SMS there is no self-service reset. Showing it once and gating the Continue button on an explicit "I wrote it down" checkbox is the honest alternative; the code is single-use. |
+| 42 | **The alphabet is A–Z minus I/O plus 2–9 (32 symbols)** and the code is displayed in three groups of four. | 32 symbols divide a random byte evenly (5 bits, no modulo bias) and the excluded glyphs are the ones people misread when copying by hand. |
+| 43 | **Database sessions, not custom JWTs.** The client uses `supabase-js` session handling; no auth logic is re-implemented. | Anything custom here is a security liability; the library is audited and already handles refresh, storage and PKCE. |
+| 44 | **Auth is behind `authService`, so the transport can change** (e.g. real SMS OTP in v2) without touching a screen. | The synthetic-email trick is a v1 compromise. The interface is the exit strategy. |
+| 45 | **Onboarding writes nothing until the last button.** `create_tenant` runs as one transaction; starter products are a separate, non-fatal step. | Half-created shops confuse a new user more than an error message. A missing starter list is fixable in one tap. |
+| 46 | **If the shop is created but the starter products fail, the app continues to the dashboard with a warning.** | Retrying "create" would make a second shop. The tenant exists, which is the expensive part; products are editable later. |
+| 47 | **Restaurant and service starter products are inserted with `is_service = true` and no opening stock.** | A salon appointment and a plate of rice have no shelf count in v1 (PROJECT_RULES 8). Marking them as services now avoids fake stock numbers later. |
+| 48 | **Business packs are data, never code paths.** Six objects, a registry, and `getPack()` that falls back to `general`. | Adding a seventh business type must not touch `features/`. A test asserts every pack's invariants (categories exist, integer paisa, sell ≥ buy). |
+| 49 | **The nav is filtered by role as well as by mode** (`visibleNavItems(mode, role)`). | The database refuses a cashier's report query; showing the tab anyway produces a dead end the user cannot explain. |
+| 50 | **Simple Mode is capped at five bottom-bar slots** (home, বিক্রি, বাকি, স্টক, আজকের হিসাব). | PROJECT_RULES 3.1 #4 and one-handed reach; settings is reachable from the header. |
+| 51 | **All UI strings come from `src/locales/**`, and a test scans the source for `t('…')` keys** in both languages. | A typo'd key renders as `auth.welcome` on the shopkeeper's screen. The scan catches it before review. |
+| 52 | **i18next placeholders are `{{double}}` by default — locale files were converted.** | A single-brace `{count}` renders literally; the test suite now proves interpolation reaches the screen ("আর 2 বার…"). |
+| 53 | **`scripts/generate-types.py` reads `pg_get_function_result`** for RPC return types and emits composite returns as the table Row. | `information_schema` reports `create_tenant` as `USER-DEFINED` with no name, which typed every RPC argument as `never`. Regenerating is now a one-liner (`npm run db:types`). |
+| 54 | **Component tests use `@testing-library/react`; no Playwright UI runs in this environment** (the browser binary cannot be downloaded here). | The behaviour that matters in Phase 3 (PIN entry, lockout banner, recovery gate, onboarding order) is asserted in jsdom; the visual pass stays a human step. |
+
 ## 2026-10-22 — Phase 2 database
 
 | # | Decision | Reason |

@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import bn from '@/locales/bn/common.json';
-import en from '@/locales/en/common.json';
-import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, isAppLanguage } from './index';
+import bnAuth from '@/locales/bn/auth.json';
+import bnCommon from '@/locales/bn/common.json';
+import bnOnboarding from '@/locales/bn/onboarding.json';
+import enAuth from '@/locales/en/auth.json';
+import enCommon from '@/locales/en/common.json';
+import enOnboarding from '@/locales/en/onboarding.json';
+import { DEFAULT_LANGUAGE, NAMESPACES, SUPPORTED_LANGUAGES, isAppLanguage } from './index';
 
 type Json = Record<string, unknown>;
 
@@ -15,20 +19,27 @@ function flattenKeys(value: Json, prefix = ''): string[] {
   });
 }
 
-describe('locale parity', () => {
-  const bnKeys = flattenKeys(bn as Json).sort();
-  const enKeys = flattenKeys(en as Json).sort();
+function valueAt(dict: Json, key: string): unknown {
+  return key.split('.').reduce<unknown>((acc, part) => {
+    return acc !== null && typeof acc === 'object' ? (acc as Json)[part] : undefined;
+  }, dict);
+}
 
+const PAIRS = [
+  { ns: 'common', bn: bnCommon, en: enCommon },
+  { ns: 'auth', bn: bnAuth, en: enAuth },
+  { ns: 'onboarding', bn: bnOnboarding, en: enOnboarding },
+];
+
+describe.each(PAIRS)('locale parity — $ns', ({ bn, en }) => {
   it('bn and en expose exactly the same keys', () => {
-    expect(enKeys).toEqual(bnKeys);
+    expect(flattenKeys(en as Json).sort()).toEqual(flattenKeys(bn as Json).sort());
   });
 
   it('has no empty translations', () => {
     for (const [lang, dict] of Object.entries({ bn, en })) {
       for (const key of flattenKeys(dict as Json)) {
-        const value = key.split('.').reduce<unknown>((acc, part) => {
-          return acc !== null && typeof acc === 'object' ? (acc as Json)[part] : undefined;
-        }, dict);
+        const value = valueAt(dict as Json, key);
         expect(typeof value, `${lang}:${key}`).toBe('string');
         expect((value as string).trim(), `${lang}:${key}`).not.toBe('');
       }
@@ -36,7 +47,12 @@ describe('locale parity', () => {
   });
 });
 
-describe('language guards', () => {
+describe('i18n setup', () => {
+  it('ships every namespace for both languages', () => {
+    expect(NAMESPACES).toEqual(['common', 'auth', 'onboarding']);
+    expect(SUPPORTED_LANGUAGES).toEqual(['bn', 'en']);
+  });
+
   it('accepts supported languages only', () => {
     expect(isAppLanguage('bn')).toBe(true);
     expect(isAppLanguage('en')).toBe(true);
@@ -46,6 +62,5 @@ describe('language guards', () => {
 
   it('defaults to Bangla', () => {
     expect(DEFAULT_LANGUAGE).toBe('bn');
-    expect(SUPPORTED_LANGUAGES).toContain('bn');
   });
 });

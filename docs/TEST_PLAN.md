@@ -77,7 +77,7 @@ What each suite proves, in plain language:
 ### Automated
 
 ```bash
-npm test          # 20 files, 229 tests
+npm test          # 20 files, 230 tests
 npm run lint
 npm run typecheck
 npm run build

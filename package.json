@@ -15,7 +15,9 @@
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "db:test": "bash supabase/tests/run-local.sh",
+    "db:types": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" --schema public > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@fontsource/hind-siliguri": "^5.1.1",

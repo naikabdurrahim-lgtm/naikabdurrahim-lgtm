@@ -68,14 +68,58 @@ A feature never imports another feature's internals.
   - editable tables (products, customers, settings) → last-write-wins by `updated_at`, and the loser's values are written to `audit_logs`.
 - Sync UI states: `offline` → `pending` → `syncing` → `synced` → `error` (calm wording, retry by tapping).
 
-## 6. Money and stock correctness
+## 6. Data model (implemented in Phase 2)
+
+19 tables, all in `supabase/migrations`. Ordered so each migration only depends on
+the ones before it.
+
+| Migration | Tables |
+|---|---|
+| 0001 | enums, internal `app` schema, shared triggers |
+| 0002 | `profiles`, `tenants`, `tenant_members`, `app_settings` + RLS predicates |
+| 0003 | `units`, `categories`, `products`, `product_variants`, `product_batches`, `suppliers` |
+| 0004 | `customers`, `ledger_entries` |
+| 0005 | `sales`, `sale_items`, `payments` |
+| 0006 | `stock_movements` + stock cache trigger |
+| 0007 | `audit_logs`, `sync_events` + audit triggers |
+| 0008 | RLS policies, grants, views |
+| 0009 | RPCs: `create_tenant`, `create_sale`, `collect_due`, `void_sale`, `record_stock_movement`, `customer_balance`, `tenant_day_summary` |
+| 0010 | reference data: units, per-pack default categories |
+
+**Invariants enforced by the database**
+
+- A child row can only belong to a parent in the same tenant (composite FKs).
+- `sale.subtotal` must equal the sum of its lines (deferred constraint trigger).
+- Line totals, sale totals, due and profit are computed by the database or by
+  `create_sale()`; a client-supplied total is ignored.
+- Stock can never go negative unless the shop allows it, and every change is a
+  movement with a type, and a reason when it is an adjustment.
+- Money/stock/ledger tables reject UPDATE and DELETE at the trigger level.
+- `updated_at` is strictly increasing per row, so a pull cursor cannot skip rows.
+
+**Views**
+
+| View | Purpose | Who can read |
+|---|---|---|
+| `v_customer_balances` | due per customer (derived from the ledger) | any member |
+| `v_stock_on_hand` | cache vs. recomputed stock (integrity check) | any member |
+| `v_sale_items_receipt` | receipt lines without cost price | any member, incl. cashiers |
+| `v_daily_summary` | sales / credit / profit per day | owner, manager |
+
+## 7. Money and stock correctness
 
 - `src/lib/money.ts` is the only place that converts between taka and paisa; it is unit-tested (21 tests).
 - Stock on hand = sum of `stock_movements`; a trigger-maintained cache column is verified against it in Phase 2 SQL tests.
 - Customer due = sum of `ledger_entries`; a due sale writes a debit, a collection writes a credit.
 - Finalised sales are never edited; corrections are reversal records.
 
-## 7. Environments
+## 8. Local database testing
+
+`npm run db:test` creates a scratch database, applies every migration in order, then
+runs five suites (isolation, roles, integrity, sync/audit, schema guards). It runs in
+CI against a `postgres:16` service. See `scripts/setup-db.md`.
+
+## 9. Environments
 
 | Env | Frontend | Database |
 |---|---|---|

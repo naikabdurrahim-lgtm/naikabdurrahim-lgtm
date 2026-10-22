@@ -3,11 +3,13 @@
 Checked at the end of every phase. Items marked **[P1]** are done in Phase 1; the rest list the phase that closes them.
 
 ## Data isolation
-- [ ] **[P2]** RLS enabled on every table in `public`.
-- [ ] **[P2]** Helper functions `is_tenant_member(uuid)` and `has_role(uuid, text[])`, `security definer` with `search_path` pinned.
-- [ ] **[P2]** Automated tests: tenant A cannot select/insert/update/delete tenant B rows.
-- [ ] **[P2]** Role tests: `cashier` cannot change prices, delete products, read profit reports or manage staff.
-- [ ] **[P1]** No service-role key anywhere in `src/`, `public/` or Android assets (gitleaks runs in CI).
+- [x] **[P2]** RLS enabled on every table in `public` — plus `90_schema_guards.sql` fails if a future table forgets it.
+- [x] **[P2]** Helper functions `is_tenant_member(uuid)` / `has_tenant_role(uuid, text[])`, `security definer` with `search_path` pinned (also asserted by a test).
+- [x] **[P2]** Automated tests: tenant A cannot read or write tenant B rows (23 assertions in `10_rls_isolation.sql`).
+- [x] **[P2]** Role tests: `cashier` cannot change prices, delete products, read cost prices or profit, move stock, or manage staff (29 assertions in `20_role_permissions.sql`).
+- [x] **[P2]** Money, stock and ledger tables have **no INSERT/UPDATE/DELETE policy**: writes go through validated `security definer` RPCs only.
+- [x] **[P2]** Append-only triggers on `ledger_entries`, `sale_items`, `payments`, `stock_movements`, `audit_logs`, `sync_events`.
+- [x] **[P1]** No service-role key anywhere in `src/`, `public/` or Android assets (gitleaks runs in CI).
 
 ## Secrets
 - [x] **[P1]** `.env` git-ignored; `.env.example` committed with placeholders only.

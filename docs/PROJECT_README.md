@@ -11,8 +11,8 @@
 | Phase | Scope | State |
 |---|---|---|
 | 1 | Setup: Vite + React + TS + Tailwind, tokens, themes, i18n, app shell, health check, CI | ✅ done |
-| 2 | Database: tables, constraints, RLS, RLS tests | next |
-| 3–12 | Auth/onboarding → products → POS → ledger → stock/reports → packs → offline sync → staff/audit → AI → Android/launch | pending |
+| 2 | Database: 19 tables, constraints, append-only guards, RLS on every table, write RPCs, 109 SQL assertions | ✅ done |
+| 3–12 | Auth/onboarding → products → POS → ledger → stock/reports → packs → offline sync → staff/audit → AI → Android/launch | next: 3 |
 
 The folder scaffold for every upcoming phase already exists, so later work adds files rather than restructuring.
 
@@ -48,6 +48,8 @@ Supabase is optional in Phase 1: without `.env` values the app still runs and `/
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | Vitest unit tests |
 | `npm run format` | Prettier write |
+| `npm run db:test` | Apply migrations to a scratch PostgreSQL and run the 5 SQL suites |
+| `npm run db:types` | Regenerate `database.types.ts` from the live schema |
 
 ---
 
@@ -62,7 +64,7 @@ src/
   lib/        money.ts, env.ts, i18n/, supabase/, useOnlineStatus.ts
   locales/    bn/ en/
   styles/     design tokens
-supabase/     migrations, seed, RLS tests            (Phase 2)
+supabase/     migrations (10), seed, SQL test suites (5)            (Phase 2)
 ai-service/   FastAPI AI service                     (Phase 11)
 docs/         rules, architecture, decisions, security, test plan
 ```
@@ -75,6 +77,9 @@ docs/         rules, architecture, decisions, security, test plan
 - **Supabase anon key only** in the client; service-role key never ships.
 - **Touch targets ≥ 48 px**, primary actions 56 px; Simple Mode = 4 big buttons.
 - **Offline-friendly shell**: fonts self-hosted, no blocking third-party requests.
+- **Money and stock are written only through server-side RPCs**; the tables have no
+  INSERT policy at all, so a modified client cannot forge a total.
+- **Every table has RLS**, and a test fails the build if a new one does not.
 
 ### Preferences (persisted per device)
 

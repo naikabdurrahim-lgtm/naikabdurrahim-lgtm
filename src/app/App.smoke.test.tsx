@@ -58,10 +58,20 @@ describe('route table', () => {
     expect(paths.map((route) => route.path)).toEqual(expect.arrayContaining(expected));
   });
 
+  it('serves the catalogue screens under /products', () => {
+    // A deep link to a product must survive a reload (PWA), so these are real
+    // routes, not dialogs held in component state.
+    expect(paths.map((route) => route.path)).toEqual(
+      expect.arrayContaining(['/products/new', '/products/categories', '/products/:productId']),
+    );
+  });
+
   it('has one page per path', () => {
     // `*` is expected twice on purpose: inside the shell (with bottom nav) and
     // at the root for a signed-out deep link. Everything else must be unique.
-    const pages = paths.map((route) => route.path).filter((path) => path !== '/*');
+    const all = paths.map((route) => route.path);
+    expect(all.filter((path) => path === '/*')).toHaveLength(2);
+    const pages = all.filter((path) => path !== '/*');
     expect(new Set(pages).size).toBe(pages.length);
   });
 });

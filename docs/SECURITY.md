@@ -27,10 +27,21 @@ Checked at the end of every phase. Items marked **[P1]** are done in Phase 1; th
 - [ ] **[P10] Self-service PIN reset.** Today the recovery code is proof-of-ownership that support verifies by hand (the sign-in screen says so). A real reset needs an admin/service-role action, which must never run in a browser; Phase 10 adds a request queue processed by an operator, or a Supabase Edge Function. **This is a known limitation, stated in the UI rather than hidden.**
 - [ ] **[P12]** Optional upgrade to a real password for owners who want one (the `authService` interface already isolates this).
 
+## Catalogue & cost visibility (Phase 4)
+- [x] **[P4]** `products.buy_price_paisa` is **not in the `authenticated` column grant**. No client role — cashier, manager or owner — can read it with a plain `SELECT`, including `select *`. Asserted by `60_catalog.sql`.
+- [x] **[P4]** Cost is returned only by `search_products()`, which nulls it unless `has_tenant_role(tenant, {owner, manager})`. The function is `security definer` with `search_path = public, pg_temp` and re-checks membership on every call.
+- [x] **[P4]** The RPC is `revoke execute … from public` and granted only to `authenticated` and `service_role`; `anon` execution is asserted to fail.
+- [x] **[P4]** Paging is clamped server-side (1–200 rows). A client cannot ask for a whole pharmacy in one request, deliberately or by mistake.
+- [x] **[P4]** Writes stay on ordinary RLS-checked table access (owner/manager only from `0008_rls.sql`); there is no definer function that writes products, so there is nothing that could bypass the policy.
+- [x] **[P4]** Opening stock is written through `record_stock_movement()`, never by updating `stock_qty` — the stock cache can only be changed by an audited movement.
+- [x] **[P4]** All RPC output is parsed with Zod before it reaches a screen: a malformed row becomes one friendly error, not a crash and not a leaked stack trace.
+- [ ] **[P9]** Offline catalogue cache in Dexie must store the **masked** product rows only, so a cashier's device never holds cost data.
+
 ## Input validation (Phase 2+)
 - [x] **[P3]** Phone numbers normalised to E.164 before any use (`normaliseBdPhone`); invalid numbers never reach the server.
-- [ ] Zod on the client for UX, CHECK constraints + RPC validation in Postgres for truth.
-- [ ] Numeric bounds: prices ≥ 0, discount ≤ subtotal, quantity > 0, `text` length caps.
+- [x] **[P4]** Zod on the client for the product and category forms (Bangla messages from the locale files, never raw Postgres text).
+- [x] **[P4]** Numeric bounds: price ≤ 2 decimals and ≥ 0, quantity ≥ 0, barcode `[A-Za-z0-9_-]` only, name ≤ 160 chars, category ≤ 60. CHECK constraints remain the source of truth.
+- [ ] Numeric bounds for sales: discount ≤ subtotal, quantity > 0 (Phase 5).
 - [ ] Parameterised queries only (Supabase client / RPC); no string-built SQL.
 
 ## Web hardening (Phase 12)

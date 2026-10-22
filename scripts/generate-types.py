@@ -133,12 +133,39 @@ def run(dsn: str, sql: str, width: int = 7) -> list[list[str]]:
 
 
 def ts_type(pg_type: str, enum_name: str = "") -> str:
-    base = pg_type.split("(")[0]
-    if base in ("uuid", "text", "timestamptz", "date", "time", "timetz", "char", "bpchar", "varchar"):
+    base = pg_type.split("(")[0].strip()
+    if base in (
+        "uuid",
+        "text",
+        "timestamptz",
+        "timestamp with time zone",
+        "timestamp without time zone",
+        "date",
+        "time",
+        "time without time zone",
+        "timetz",
+        "char",
+        "bpchar",
+        "varchar",
+        "character varying",
+        "character",
+    ):
         return "string"
-    if base in ("int2", "int4", "int8", "numeric", "float4", "float8"):
+    if base in (
+        "int2",
+        "int4",
+        "int8",
+        "integer",
+        "smallint",
+        "bigint",
+        "numeric",
+        "float4",
+        "float8",
+        "double precision",
+        "real",
+    ):
         return "number"
-    if base == "bool":
+    if base in ("bool", "boolean"):
         return "boolean"
     if base in ("json", "jsonb"):
         return "Json"
@@ -149,8 +176,44 @@ def ts_type(pg_type: str, enum_name: str = "") -> str:
     return "unknown"
 
 
-def return_type(result: str) -> str:
-    if result.startswith("TABLE") or result.startswith("SETOF"):
+def parse_table_return(result: str) -> list[tuple[str, str]] | None:
+    """`TABLE(id uuid, stock numeric)` → [("id", "uuid"), ("stock", "numeric")]."""
+    if not result.startswith("TABLE("):
+        return None
+    inner = result[len("TABLE("):].rstrip(")")
+    columns: list[tuple[str, str]] = []
+    depth = 0
+    current = ""
+    parts: list[str] = []
+    for char in inner:
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+        if char == "," and depth == 0:
+            parts.append(current)
+            current = ""
+        else:
+            current += char
+    parts.append(current)
+    for part in parts:
+        name, _, pg_type = part.strip().partition(" ")
+        if name and pg_type:
+            columns.append((name, pg_type.strip()))
+    return columns or None
+
+
+def return_type(result: str, enums: dict | None = None) -> str:
+    table_columns = parse_table_return(result)
+    if table_columns:
+        enums = enums or {}
+        fields = []
+        for name, pg_type in table_columns:
+            bare = pg_type.split(".")[-1].split("(")[0].strip()
+            enum_name = bare if bare in enums else ""
+            fields.append(f"{name}: {ts_type(pg_type, enum_name)} | null;")
+        return "{ " + " ".join(fields) + " }"
+    if result.startswith("SETOF"):
         return "Json"
     if result in ("json", "jsonb"):
         return "Json"
@@ -318,8 +381,18 @@ def main() -> None:
                 ts = f'Database["public"]["Enums"]["{arg_type}"]'
             rendered.append(f"          {arg_name}{'?' if optional else ''}: {ts};")
 
+        table_columns = parse_table_return(result)
         plain = result.split(".", 1)[1] if "." in result else result
-        if plain in tables:
+
+        if table_columns:
+            fields = []
+            for column_name, pg_type in table_columns:
+                bare = pg_type.split(".")[-1].split("(")[0].strip()
+                enum_name = bare if bare in enums else ""
+                fields.append(f"{column_name}: {ts_type(pg_type, enum_name)} | null;")
+            # RETURNS TABLE is set-returning: PostgREST hands back an array.
+            returns = "{ " + " ".join(fields) + " }[]"
+        elif plain in tables:
             returns = f'Database["public"]["Tables"]["{plain}"]["Row"]'
         elif result in ("json", "jsonb", "TABLE", "record"):
             returns = "Json"

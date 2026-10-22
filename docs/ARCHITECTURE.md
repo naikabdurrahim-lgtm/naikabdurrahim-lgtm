@@ -163,3 +163,34 @@ SignInPage / SignUpPage
 - **Packs**: `src/packs/*` is data only — id, Bangla/English labels, terminology,
   default categories and units, feature modules, starter products. `getPack()`
   falls back to `general`, so an unknown pack can never break a screen.
+
+## 11. Catalogue (Phase 4)
+
+```
+ProductsPage ── useProducts() ── search_products(p_tenant, query, category, limit, offset, include_inactive, id, low_stock)
+     │                │
+     │                └─ useInfiniteQuery, 40 rows/page, 30 s staleTime
+     ├─ useCategories() ── list_categories(p_tenant)  → chips with counts
+     └─ ProductCard → /products/:id
+
+ProductFormPage ── zodResolver(buildProductFormSchema(t))
+     │                 └─ strings in, `toProductInput()` → paisa + thousandths
+     ├─ create: insert into products (RLS) + record_stock_movement(reason='opening')
+     └─ edit:   update products (RLS) / soft delete + 10 s undo toast
+```
+
+- **Reads are RPCs, writes are tables.** The RPC is the only way to receive cost
+  (`buy_price_paisa` is outside the role's column grant), and it is the only place
+  that can filter and page 4,000 SKUs without shipping them to the browser.
+- **The feature folder owns everything**: `types.ts` (view models), `schema.ts`
+  (validation + conversion), `api.ts` (the only Postgres caller, Zod-parsed),
+  `queries.ts` (TanStack hooks and cache keys), `useCatalogueTerms.ts` (pack words
+  such as ঔষধ vs পণ্য), `components/`, `pages/`.
+- **Cache keys** are `['products', tenantId, query, categoryId, lowStock]` and
+  `['categories', tenantId]`; every mutation invalidates both, because category
+  counts are derived from products.
+- **Errors are codes, not messages.** `ProductApiError.code` maps to
+  `products:errors.*`, so the same failure is Bangla or English without the SQL
+  text ever reaching the user.
+- **Money and quantity never touch a float**: the form holds strings, `schema.ts`
+  converts once, and the API stores integer paisa and `numeric(14,3)`.

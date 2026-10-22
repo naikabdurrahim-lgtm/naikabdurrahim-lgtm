@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import bnAuth from '@/locales/bn/auth.json';
 import bnCommon from '@/locales/bn/common.json';
 import bnOnboarding from '@/locales/bn/onboarding.json';
+import bnProducts from '@/locales/bn/products.json';
 import enAuth from '@/locales/en/auth.json';
 import enCommon from '@/locales/en/common.json';
 import enOnboarding from '@/locales/en/onboarding.json';
+import enProducts from '@/locales/en/products.json';
 import { DEFAULT_LANGUAGE, NAMESPACES, SUPPORTED_LANGUAGES, isAppLanguage } from './index';
 
 type Json = Record<string, unknown>;
@@ -29,6 +31,7 @@ const PAIRS = [
   { ns: 'common', bn: bnCommon, en: enCommon },
   { ns: 'auth', bn: bnAuth, en: enAuth },
   { ns: 'onboarding', bn: bnOnboarding, en: enOnboarding },
+  { ns: 'products', bn: bnProducts, en: enProducts },
 ];
 
 describe.each(PAIRS)('locale parity — $ns', ({ bn, en }) => {
@@ -49,7 +52,7 @@ describe.each(PAIRS)('locale parity — $ns', ({ bn, en }) => {
 
 describe('i18n setup', () => {
   it('ships every namespace for both languages', () => {
-    expect(NAMESPACES).toEqual(['common', 'auth', 'onboarding']);
+    expect(NAMESPACES).toEqual(['common', 'auth', 'onboarding', 'products']);
     expect(SUPPORTED_LANGUAGES).toEqual(['bn', 'en']);
   });
 

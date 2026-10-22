@@ -5,12 +5,13 @@
 | Layer | Tool | Scope | Status |
 |---|---|---|---|
 | Money & quantity math | Vitest | parse/format/sum/discount/line totals/profit | ✅ 21 tests (Phase 1) |
-| UI components | Vitest + Testing Library | MoneyText numerals, BigActionButton targets | Phase 4 |
-| Permissions | Vitest | `can(user, action)` matrix | Phase 3 |
+| UI components | Vitest + Testing Library | MoneyText numerals, BigActionButton targets, PIN entry, products list states, onboarding order | ✅ Phase 3–4 |
+| Permissions | Vitest | `can(user, action)` matrix | ✅ Phase 3 |
 | Sync outbox | Vitest | retry/backoff, idempotent ids, conflict policy | Phase 9 |
 | Database rules | SQL (scripted) | CHECK constraints, append-only guards, stock/due derivation, idempotency, void/reversal | ✅ `30_integrity.sql` — 37 assertions |
 | RLS | SQL (scripted) | cross-tenant read/write must fail; role restrictions | ✅ `10_rls_isolation.sql` (23) + `20_role_permissions.sql` (29) |
 | Schema guards | SQL (scripted) | RLS on every table, tenant_id present, pinned search_path, integer money, no anon RPC access | ✅ `90_schema_guards.sql` — 9 assertions |
+| Catalogue access | SQL (scripted) | cost column unreadable by any client role, cost masked in the RPC, Bangla/English/barcode search, paging, low-stock filter, category counts | ✅ `60_catalog.sql` — 35 assertions |
 | Sync support | SQL (scripted) | monotonic `updated_at`, soft deletes, audit of overwrites, append-only telemetry | ✅ `40_sync_and_audit.sql` — 11 assertions |
 | End-to-end | Playwright | onboarding → sale → due → collect → dashboard; offline sale then reconnect | Phase 5–9 |
 
@@ -135,3 +136,43 @@ Unit tests added in Phase 3:
 7. `/reports` as a cashier: the tab is hidden, and the URL redirects home.
 8. Rotate the phone to 360 px: all primary buttons stay ≥ 48 px, the bottom bar
    shows five slots in Simple Mode.
+
+## Phase 4 specific (products & categories)
+
+Automated:
+
+- [x] `npm test` — 22 files, 259 tests, including `features/products/schema.test.ts`
+      (validation, paisa/thousandths conversion, stock warnings) and
+      `features/products/pages/ProductsPage.test.tsx` (skeleton, error, empty,
+      low-stock chip, debounced search).
+- [x] `supabase/tests/60_catalog.sql` — the cost column is unreadable by cashier,
+      manager **and** owner; the RPC masks cost for a cashier; search finds Bangla,
+      English and a barcode prefix; paging does not overlap; a soft-deleted category
+      leaves the product; the low-stock filter excludes services.
+- [x] `npm run typecheck`, `npm run lint --max-warnings=0`, `npm run build`.
+
+Manual (needs the Supabase project from `.env`):
+
+1. Sign in as the owner, open **পণ্য**.
+2. The list shows skeletons for a moment, then rows with price and stock state —
+   never a blank screen. Pull-to-refresh is not needed; a reload refetches.
+3. Type `চাল` in the search box: the list narrows after ~250 ms and the empty-state
+   copy changes to "no match" if nothing is found.
+4. Tap **কম স্টক**: only products at or below their alert level appear; a service
+   product never does.
+5. Tap **পণ্য যোগ করুন**, fill name + price only, tap **সংরক্ষণ** → back on the list,
+   the new product is at the top with a Bangla toast.
+6. Add a second product with **আরেকটি যোগ করুন**: the unit and "service" flag are
+   kept, the name and price are empty, and the cursor is in the name field.
+7. Open a product, change the price, save → the list shows the new price immediately
+   (the query cache is invalidated).
+8. Delete a product, then tap **ফিরিয়ে আনুন** within 10 seconds → it comes back.
+   Wait 10 seconds and delete again → it stays gone (but is only soft-deleted).
+9. Open **ক্যাটাগরি**, add "মাছ", rename it, then delete it → products in it stay,
+   uncategorised.
+10. Sign in as a cashier: **পণ্য** still opens and prices are visible, but the form is
+    refused by the database and the screen says **অনুমতি নেই** — no raw Postgres text.
+11. Barcode: type `8901234` into search → the product with that barcode prefix appears
+    (Phase 5 adds the camera scanner).
+12. Check both languages and Simple/Pro mode: no string is missing, all amounts switch
+    to Bangla numerals when the toggle is on.

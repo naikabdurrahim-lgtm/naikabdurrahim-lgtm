@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { BarChart3, BookOpen, Boxes, ShoppingCart, Users, Wallet } from 'lucide-react';
+import { BarChart3, Boxes, ShoppingCart, Users, Wallet } from 'lucide-react';
 import { AppShell } from '@/app/layout/AppShell';
 import { HomePage } from '@/app/pages/HomePage';
 import { HealthPage } from '@/app/pages/HealthPage';
@@ -12,6 +12,9 @@ import { RequireShop } from '@/features/auth/components/RequireShop';
 import { SignInPage } from '@/features/auth/pages/SignInPage';
 import { SignUpPage } from '@/features/auth/pages/SignUpPage';
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage';
+import { ProductsPage } from '@/features/products/pages/ProductsPage';
+import { ProductFormPage } from '@/features/products/pages/ProductFormPage';
+import { CategoriesPage } from '@/features/products/pages/CategoriesPage';
 
 /**
  * Route table.
@@ -59,8 +62,15 @@ export const router = createBrowserRouter([
                 element: <ModulePlaceholder icon={BarChart3} titleKey="nav.today" phase={7} />,
               },
               {
+                // The catalogue: owner, manager and cashier all need to look a
+                // price up, so no role guard. Writes are gated by RLS anyway.
                 path: 'products',
-                element: <ModulePlaceholder icon={BookOpen} titleKey="nav.products" phase={4} />,
+                children: [
+                  { index: true, element: <ProductsPage /> },
+                  { path: 'new', element: <ProductFormPage /> },
+                  { path: 'categories', element: <CategoriesPage /> },
+                  { path: ':productId', element: <ProductFormPage /> },
+                ],
               },
               {
                 path: 'customers',

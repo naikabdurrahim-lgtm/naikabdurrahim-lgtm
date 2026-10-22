@@ -98,12 +98,14 @@ end;
 $$;
 
 -- Row count for a plain table read (shortcut for the common case).
+-- `select 1`, not `select *`: a table may grant SELECT on some columns only
+-- (products hides cost), and counting rows must not require every column.
 create or replace function tests.count_rows(p_user uuid, p_table text)
 returns bigint
 language plpgsql
 as $$
 begin
-  return tests.count_as(p_user, format('select * from %s', p_table));
+  return tests.count_as(p_user, format('select 1 from %s', p_table));
 end;
 $$;
 

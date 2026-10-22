@@ -5,6 +5,26 @@ Rule (PROJECT_RULES 1.9): every non-trivial choice goes here so future phases do
 
 ---
 
+## 2026-10-22 — Phase 4 products & categories
+
+| # | Decision | Reason |
+|---|---|---|
+| 55 | **Cost price (`buy_price_paisa`) is hidden from the `authenticated` role at the column level**, not by a view or client filtering. | RLS is row-level and cannot hide a column; a cashier could otherwise read cost with a plain `select`. The table grant is now an explicit column list without cost. Consequence: **nobody** can read the raw column, not even an owner — and that is deliberate. |
+| 56 | **Cost is served only by `search_products()`**, a `security definer` function that returns `buy_price_paisa` as null unless `has_tenant_role(tenant, {owner, manager})`. | One auditable place decides cost visibility, and the same function already has to check membership. It also keeps the cost out of any accidentally-cached client query. |
+| 57 | **Reading the catalogue goes through the RPC, not `select * from products`.** | A pharmacy with 4,000 SKUs must not be downloaded to filter it in the browser; search, category filter, paging and the low-stock filter are all server-side. |
+| 58 | **Paging is keyset-free offset paging, 40 rows per page, with a 1–200 clamp server-side.** | The catalogue is small enough that offsets never get deep; clamp prevents a client asking for a whole pharmacy in one response. Revisit only if a shop exceeds ~20k products. |
+| 59 | **Search matches Bangla name, English name, barcode prefix, SKU and the `simple` tsvector.** | A shopkeeper types “চাল”, an English name, or scans/keys the first digits of a barcode — all three must find the product. Barcode is a prefix match so a scanner that appends a check digit still works. |
+| 60 | **The low-stock filter is a server argument (`p_low_stock`), and services are always excluded.** | Filtering client-side would only filter the current page, which is worse than useless; a service has no stock to run out of. A product with `stock_alert_qty = 0` is never shown as low — "no alert set" is not "zero". |
+| 61 | **`list_categories()` returns counts computed in SQL.** | The chips show “চাল-ডাল 12”; counting in the client would need every product again. |
+| 62 | **Writes use the tables directly (RLS: owner/manager), reads use RPCs.** | Insert/update stay ordinary PostgREST calls with no cost leak; keeping them out of the definer functions means less SQL surface to audit. |
+| 63 | **Opening stock is never a product column write.** It is a second step through `record_stock_movement(reason='opening')`. | PROJECT_RULES 5.4: stock only moves through movements. If the movement fails, the product still exists and the UI says so — losing the product would be worse. |
+| 64 | **Deleting a product or category is a soft delete with a 10-second undo toast.** | Sales history must keep referencing the row, and the undo requirement (PROJECT_RULES 3.1 #10) is cheap to honour when nothing is really gone. |
+| 65 | **A removed category never removes its products**; they become uncategorised and the delete confirmation says how many. | Silently deleting a whole category's stock would be a data-loss bug that looks like a feature. |
+| 66 | **The products screen has no role guard; the form is reachable only by owner/manager through RLS.** | A cashier must be able to look up a price mid-sale. A refused write surfaces as “অনুমতি নেই”, not a dead screen. |
+| 67 | **Form state is strings; paisa and thousandths exist only after validation** (`toProductInput`). | One conversion point means a price can never be stored as a float, and the user's Bangla numerals and commas survive until the last moment. |
+| 68 | **"Save and add another" keeps the unit and service flag** but clears everything else. | Adding twenty SKUs from one delivery note is the common case; retyping "kg" twenty times is the fastest way to lose a user. |
+| 69 | **`UnitCode` is a runtime tuple (`UNIT_CODES`) with an `isUnitCode()` guard.** | The RPC returns `text`; a DB value the client does not know must fall back to `piece` instead of crashing a screen. |
+
 ## 2026-10-22 — Phase 3 auth, onboarding, packs
 
 | # | Decision | Reason |

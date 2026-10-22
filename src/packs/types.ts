@@ -19,8 +19,29 @@ export type ModuleKey =
   | 'tables' // later
   | 'appointments'; // later
 
-export type UnitCode =
-  'piece' | 'dozen' | 'packet' | 'strip' | 'box' | 'bottle' | 'kg' | 'gram' | 'litre' | 'ml';
+/**
+ * Mirrors the `units` table exactly (`supabase/migrations/0003_catalog.sql`).
+ * Order matters: it is the order the unit picker shows — count units first,
+ * then weight and volume, which are rarer in a small shop.
+ */
+export const UNIT_CODES = [
+  'piece',
+  'dozen',
+  'packet',
+  'strip',
+  'box',
+  'bottle',
+  'kg',
+  'gram',
+  'litre',
+  'ml',
+] as const;
+
+export type UnitCode = (typeof UNIT_CODES)[number];
+
+export function isUnitCode(value: unknown): value is UnitCode {
+  return typeof value === 'string' && (UNIT_CODES as readonly string[]).includes(value);
+}
 
 export type SampleProduct = {
   nameBn: string;

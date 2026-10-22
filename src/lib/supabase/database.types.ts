@@ -1294,6 +1294,20 @@ export type Database = {
         };
         Returns: boolean;
       };
+      list_categories: {
+        Args: {
+          p_tenant: string;
+        };
+        Returns: {
+          id: string | null;
+          name: string | null;
+          name_en: string | null;
+          icon: string | null;
+          sort_order: number | null;
+          is_active: boolean | null;
+          product_count: number | null;
+        }[];
+      };
       purge_old_auth_attempts: {
         Args: {
           p_older_than?: Json;
@@ -1315,6 +1329,36 @@ export type Database = {
           p_payload: Json;
         };
         Returns: Json;
+      };
+      search_products: {
+        Args: {
+          p_tenant: string;
+          p_query?: string;
+          p_category?: string;
+          p_limit?: number;
+          p_offset?: number;
+          p_include_inactive?: boolean;
+          p_id?: string;
+          p_low_stock?: boolean;
+        };
+        Returns: {
+          id: string | null;
+          name: string | null;
+          name_en: string | null;
+          category_id: string | null;
+          category_name: string | null;
+          unit_code: string | null;
+          barcode: string | null;
+          sku: string | null;
+          sell_price_paisa: number | null;
+          buy_price_paisa: number | null;
+          wholesale_price_paisa: number | null;
+          stock_qty: number | null;
+          stock_alert_qty: number | null;
+          is_service: boolean | null;
+          is_active: boolean | null;
+          updated_at: string | null;
+        }[];
       };
       set_recovery_code: {
         Args: {

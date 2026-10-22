@@ -75,14 +75,14 @@ select tests.eq(
 
 select tests.eq(
   tests.count_as('11111111-1111-1111-1111-111111111111',
-    format($sql$select * from public.products where tenant_id = %L$sql$,
+    format($sql$select id from public.products where tenant_id = %L$sql$,
            (select id from fixtures where key = 'tenant_b'))),
   0::bigint,
   'a cross-tenant id lookup returns no rows instead of failing'
 );
 
 select tests.eq(
-  tests.count_as('11111111-1111-1111-1111-111111111111', $sql$select * from public.sales$sql$),
+  tests.count_as('11111111-1111-1111-1111-111111111111', $sql$select 1 from public.sales$sql$),
   0::bigint,
   'owner A sees no sales from shop B'
 );

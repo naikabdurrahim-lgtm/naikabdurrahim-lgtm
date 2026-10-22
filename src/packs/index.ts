@@ -28,4 +28,4 @@ export function getPack(id: PackId | string | null | undefined): BusinessPack {
 }
 
 export type { BusinessPack, ModuleKey, PackId, SampleProduct, UnitCode } from './types';
-export { hasModule, isPackId } from './types';
+export { hasModule, isPackId, isUnitCode, UNIT_CODES } from './types';

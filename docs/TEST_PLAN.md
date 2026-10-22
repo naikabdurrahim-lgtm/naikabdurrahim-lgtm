@@ -226,13 +226,15 @@ Manual (needs the Supabase project from `.env`):
 
 Automated:
 
-- [x] `npm test` — 29 files, 341 tests, including `features/customers/api.test.ts`
+- [x] `npm test` — 30 files, 345 tests, including `features/customers/api.test.ts`
       (bigint strings, omitted optional args, error-code mapping, soft delete,
       idempotent collection, reversal), `features/customers/schema.test.ts`
       (name-only customer, four ways to write a phone, taka → paisa) and
       `features/customers/components/CustomerListScreen.test.tsx` (total, debtor
       rows, collect button only when money is owed, pre-filled full due, undo
-      calls `void_payment`, skeletons, retry on failure).
+      calls `void_payment`, skeletons, retry on failure) and
+      `app/pages/HomePage.test.tsx` (Simple Mode is exactly the four primary
+      actions; Pro Mode links reach `/customers`; no invented ৳0).
 - [x] `supabase/tests/80_customers.sql` — a sale minus a collection is the due;
       voiding the sale removes the due; the debtor view hides settled customers;
       the biggest debtor sorts first; a phone typed without `+880` still matches;

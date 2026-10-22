@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens — single source of truth (PROJECT_RULES 3.2).
+ * Dark-first: `:root` holds the dark palette, `.light` overrides it.
+ * Accents are separate: `[data-theme="teal|blue|purple|pink|amber"]`.
+ */
+
+@layer base {
+  :root {
+    /* Surfaces (dark navy / charcoal) */
+    --background: 224 47% 8%;
+    --foreground: 210 40% 96%;
+
+    --surface: 223 40% 11%;
+    --surface-raised: 222 35% 15%;
+
+    --card: 223 40% 11%;
+    --card-foreground: 210 40% 96%;
+
+    --popover: 223 42% 10%;
+    --popover-foreground: 210 40% 96%;
+
+    --muted: 222 28% 18%;
+    --muted-foreground: 215 20% 68%;
+
+    --secondary: 222 28% 18%;
+    --secondary-foreground: 210 40% 96%;
+
+    --border: 220 24% 22%;
+    --input: 220 24% 24%;
+    --ring: 168 76% 42%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Semantic (colour is never the only signal — icons/text accompany these) */
+    --money-in: 158 64% 44%;
+    --money-out: 0 72% 58%;
+    --warning: 38 92% 55%;
+
+    --radius: 1rem;
+
+    /* Type scale — replaced by [data-font-size] below for accessibility */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+
+    /* Accent swatches — used by the settings picker so colours live in one place. */
+    --swatch-teal: 168 76% 42%;
+    --swatch-blue: 217 91% 60%;
+    --swatch-purple: 262 83% 65%;
+    --swatch-pink: 330 81% 62%;
+    --swatch-amber: 38 92% 55%;
+
+    /* Accent defaults (teal). Overridden by data-theme blocks. */
+    --primary: 168 76% 42%;
+    --primary-foreground: 224 47% 8%;
+    --accent: 168 60% 22%;
+    --accent-foreground: 168 80% 88%;
+  }
+
+  /* ---------------------------------------------------------------- accents */
+  [data-theme='teal'] {
+    --primary: 168 76% 42%;
+    --primary-foreground: 224 47% 8%;
+    --accent: 168 60% 22%;
+    --accent-foreground: 168 80% 88%;
+    --ring: 168 76% 42%;
+  }
+  [data-theme='blue'] {
+    --primary: 217 91% 60%;
+    --primary-foreground: 224 47% 8%;
+    --accent: 217 60% 24%;
+    --accent-foreground: 214 90% 90%;
+    --ring: 217 91% 60%;
+  }
+  [data-theme='purple'] {
+    --primary: 262 83% 65%;
+    --primary-foreground: 224 47% 8%;
+    --accent: 262 50% 26%;
+    --accent-foreground: 262 85% 92%;
+    --ring: 262 83% 65%;
+  }
+  [data-theme='pink'] {
+    --primary: 330 81% 62%;
+    --primary-foreground: 224 47% 8%;
+    --accent: 330 50% 26%;
+    --accent-foreground: 330 85% 92%;
+    --ring: 330 81% 62%;
+  }
+  [data-theme='amber'] {
+    --primary: 38 92% 55%;
+    --primary-foreground: 224 47% 8%;
+    --accent: 38 60% 24%;
+    --accent-foreground: 38 95% 90%;
+    --ring: 38 92% 55%;
+  }
+
+  /* ------------------------------------------------------------- light mode */
+  .light {
+    --background: 210 25% 98%;
+    --foreground: 224 40% 12%;
+
+    --surface: 0 0% 100%;
+    --surface-raised: 210 20% 96%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 40% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 40% 12%;
+
+    --muted: 210 20% 94%;
+    --muted-foreground: 220 12% 42%;
+
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 224 40% 12%;
+
+    --border: 214 22% 88%;
+    --input: 214 22% 84%;
+
+    --destructive: 0 72% 46%;
+    --destructive-foreground: 0 0% 100%;
+
+    --money-in: 158 68% 32%;
+    --money-out: 0 72% 48%;
+    --warning: 32 90% 44%;
+  }
+
+  /* Font-size accessibility levels (3 levels, PROJECT_RULES 3.1 #5) */
+  [data-font-size='sm'] {
+    --text-xs: 0.7rem;
+    --text-sm: 0.8rem;
+    --text-base: 0.9rem;
+    --text-lg: 1rem;
+    --text-xl: 1.1rem;
+    --text-2xl: 1.3rem;
+    --text-3xl: 1.6rem;
+  }
+  [data-font-size='md'] {
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+  }
+  [data-font-size='lg'] {
+    --text-xs: 0.85rem;
+    --text-sm: 1rem;
+    --text-base: 1.15rem;
+    --text-lg: 1.3rem;
+    --text-xl: 1.45rem;
+    --text-2xl: 1.75rem;
+    --text-3xl: 2.15rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    /* Safe areas for notched phones / Android gesture bar */
+    padding-bottom: env(safe-area-inset-bottom);
+    min-height: 100dvh;
+  }
+
+  /* Accessible focus ring everywhere (PROJECT_RULES 3.1 #15) */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Respect users who disable animation */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Card used across the app: soft glass on dark, plain white on light */
+  .app-card {
+    @apply rounded-2xl border border-border/70 bg-card/90 shadow-card backdrop-blur-sm;
+  }
+
+  /* Primary action button: 56px tall (PROJECT_RULES 3.1 #5) */
+  .btn-cta {
+    @apply inline-flex min-h-cta w-full items-center justify-center gap-3 rounded-2xl bg-primary px-5 text-lg font-semibold text-primary-foreground transition-transform active:scale-[0.98];
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-lg bg-muted;
+  }
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent;
+  }
+}
+
+/* Numerals are converted in JS (MoneyText/NumberText), so the glyphs come from
+   the Bangla font. This class only resets tabular figures, which would otherwise
+   space Bangla digits unevenly. Inputs and IDs keep ASCII digits. */
+.bn-digits {
+  font-variant-numeric: normal;
+}

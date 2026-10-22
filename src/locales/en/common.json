@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "Dokan Bondhu",
+    "tagline": "Small business accounts, in plain Bangla",
+    "shortTagline": "Sales, dues and stock — in one place"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "retry": "Try again",
+    "continue": "Continue",
+    "confirm": "Yes, that's right",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "voice": "Speak",
+    "scan": "Scan barcode",
+    "undo": "Mistake? Undo",
+    "logout": "Log out"
+  },
+  "nav": {
+    "home": "Home",
+    "sell": "Sell",
+    "due": "Dues",
+    "stock": "Stock",
+    "today": "Today",
+    "products": "Products",
+    "customers": "Customers",
+    "reports": "Reports",
+    "history": "Sales history",
+    "staff": "Staff",
+    "settings": "Settings",
+    "ai": "Assistant",
+    "more": "More"
+  },
+  "home": {
+    "greeting": "Welcome",
+    "simpleModeHint": "Tap what you want to do",
+    "proModeHint": "Everything in one place",
+    "todaysSales": "Today's sales",
+    "todaysProfit": "Today's profit",
+    "stockValue": "Stock value",
+    "totalDue": "Total dues",
+    "noSalesYet": "No sales yet today",
+    "startSelling": "Make your first sale"
+  },
+  "status": {
+    "offline": "Offline, your data is safe",
+    "syncing": "Syncing…",
+    "synced": "All synced",
+    "online": "Online"
+  },
+  "health": {
+    "title": "System check",
+    "subtitle": "See whether everything is set up correctly",
+    "supabaseConfigured": "Database connection looks good",
+    "supabaseMissing": "Database is not connected yet",
+    "supabaseMissingHelp": "Complete the steps above, then try again.",
+    "appVersion": "Version",
+    "language": "Language",
+    "theme": "Theme",
+    "checking": "Checking…",
+    "allGood": "All good",
+    "needsSetup": "Some setup is still needed"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "unexpected": "An unexpected error happened. Don't worry — your data is safe.",
+    "tryAgain": "Try again",
+    "goHome": "Go home",
+    "notFound": "We couldn't find that page.",
+    "notFoundHelp": "The address may be wrong, or the page was moved.",
+    "offlineHelp": "No internet. Keep working — it will sync by itself when you're back online."
+  },
+  "setup": {
+    "title": "Before you start",
+    "envHelp": "Create a `.env` file in the project root and add your Supabase URL and key. See `.env.example`.",
+    "step1": "Create a project in Supabase",
+    "step2": "Copy the URL and anon key from Project Settings → API",
+    "step3": "Put them in the `.env` file",
+    "step4": "Stop and restart the dev server"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "toggleTheme": "Toggle light and dark",
+    "languageSwitch": "Change language",
+    "loading": "Loading"
+  },
+  "units": {
+    "piece": "pc",
+    "kg": "kg",
+    "gram": "g",
+    "litre": "L",
+    "ml": "ml",
+    "packet": "packet",
+    "strip": "strip",
+    "box": "box",
+    "bottle": "bottle",
+    "dozen": "dozen"
+  },
+  "money": {
+    "taka": "Taka",
+    "paid": "Paid",
+    "due": "Due"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Light or dark",
+    "appearanceDark": "Dark",
+    "appearanceLight": "Light",
+    "appearanceSystem": "Match phone",
+    "accent": "Pick a colour",
+    "accentTeal": "Teal",
+    "accentBlue": "Blue",
+    "accentPurple": "Purple",
+    "accentPink": "Pink",
+    "accentAmber": "Amber",
+    "fontSize": "Text size",
+    "fontSizeSm": "Small",
+    "fontSizeMd": "Medium",
+    "fontSizeLg": "Large",
+    "numerals": "Numbers",
+    "numeralsBn": "Bangla (০১২৩)",
+    "numeralsEn": "English (0123)",
+    "mode": "App mode",
+    "modeSimple": "Simple mode",
+    "modeSimpleHint": "Just 4 big buttons",
+    "modePro": "Pro mode",
+    "modeProHint": "All features together",
+    "language": "Language",
+    "languageBn": "বাংলা",
+    "languageEn": "English",
+    "previewTitle": "Preview",
+    "previewSale": "Today's sales",
+    "resetPrefs": "Reset to defaults",
+    "phaseNote": "This area is being prepared. The rest arrives in the next phase."
+  },
+  "placeholder": {
+    "title": "Coming soon",
+    "body": "This area is still being built. It arrives in a later phase."
+  }
+}

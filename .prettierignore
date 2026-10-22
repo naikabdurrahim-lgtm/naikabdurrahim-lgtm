@@ -1,0 +1,8 @@
+dist
+coverage
+node_modules
+android
+package-lock.json
+*.png
+*.svg
+*.md

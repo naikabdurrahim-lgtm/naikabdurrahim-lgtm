@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+coverage/
+*.local
+
+# Env files — never commit real secrets (PROJECT_RULES 6.6)
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test artefacts
+playwright-report/
+test-results/
+.vitest/
+
+# Capacitor / Android build artefacts
+android/app/build/
+android/.gradle/
+android/local.properties
+android/app/src/main/assets/public/
+
+# TypeScript incremental build info
+*.tsbuildinfo

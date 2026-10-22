@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "দোকান বন্ধু",
+    "tagline": "ছোট ব্যবসার হিসাব, সহজ বাংলায়",
+    "shortTagline": "বিক্রি, বাকি আর স্টক — এক জায়গায়"
+  },
+  "actions": {
+    "save": "সেভ করুন",
+    "cancel": "বাতিল",
+    "close": "বন্ধ করুন",
+    "back": "পেছনে",
+    "next": "পরের ধাপ",
+    "done": "হয়ে গেছে",
+    "retry": "আবার চেষ্টা করুন",
+    "continue": "চালিয়ে যান",
+    "confirm": "হ্যাঁ, ঠিক আছে",
+    "delete": "মুছে ফেলুন",
+    "edit": "বদলান",
+    "add": "যোগ করুন",
+    "search": "খুঁজুন",
+    "voice": "মুখে বলুন",
+    "scan": "বারকোড স্ক্যান",
+    "undo": "ভুল হয়েছে? ফেরান",
+    "logout": "লগ আউট"
+  },
+  "nav": {
+    "home": "হোম",
+    "sell": "বিক্রি",
+    "due": "বাকি",
+    "stock": "স্টক",
+    "today": "আজকের হিসাব",
+    "products": "পণ্য",
+    "customers": "কাস্টমার",
+    "reports": "রিপোর্ট",
+    "history": "হিসাবের খাতা",
+    "staff": "কর্মচারী",
+    "settings": "সেটিংস",
+    "ai": "সহকারী",
+    "more": "আরও"
+  },
+  "home": {
+    "greeting": "আসসালামু আলাইকুম",
+    "simpleModeHint": "যা করতে চান, টিপুন",
+    "proModeHint": "সব কাজ এক জায়গায়",
+    "todaysSales": "আজকের বিক্রি",
+    "todaysProfit": "আজকের লাভ",
+    "stockValue": "স্টকের দাম",
+    "totalDue": "মোট বাকি",
+    "noSalesYet": "আজ এখনো কোনো বিক্রি হয়নি",
+    "startSelling": "প্রথম বিক্রি শুরু করুন"
+  },
+  "status": {
+    "offline": "অফলাইন, ডাটা নিরাপদ আছে",
+    "syncing": "সিঙ্ক হচ্ছে…",
+    "synced": "সব সিঙ্ক হয়েছে",
+    "online": "অনলাইন"
+  },
+  "health": {
+    "title": "সিস্টেম পরীক্ষা",
+    "subtitle": "সবকিছু ঠিকঠাক চলছে কি না, দেখে নিন",
+    "supabaseConfigured": "ডাটাবেস সংযোগ ঠিক আছে",
+    "supabaseMissing": "ডাটাবেস এখনো যুক্ত হয়নি",
+    "supabaseMissingHelp": "উপরের কাজগুলো করুন, তারপর আবার চেষ্টা করুন।",
+    "appVersion": "সংস্করণ",
+    "language": "ভাষা",
+    "theme": "রঙ",
+    "checking": "দেখা হচ্ছে…",
+    "allGood": "সব ঠিক আছে",
+    "needsSetup": "কিছু সেটআপ বাকি আছে"
+  },
+  "errors": {
+    "title": "একটু সমস্যা হয়েছে",
+    "unexpected": "কিছু একটা ভুল হয়েছে। চিন্তা করবেন না, আপনার ডাটা ঠিক আছে।",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "goHome": "হোমে ফিরুন",
+    "notFound": "এই পাতাটি খুঁজে পাওয়া যায়নি।",
+    "notFoundHelp": "হয়তো ঠিকানাটি ভুল, অথবা পাতাটি সরানো হয়েছে।",
+    "offlineHelp": "ইন্টারনেট নেই। কাজ চালিয়ে যান — অনলাইনে এলে নিজেই সিঙ্ক হবে।"
+  },
+  "setup": {
+    "title": "শুরু করার আগে",
+    "envHelp": "প্রজেক্টের মূল ফোল্ডারে `.env` ফাইল বানিয়ে Supabase-এর ঠিকানা ও চাবি বসান। `.env.example` দেখুন।",
+    "step1": "Supabase-এ একটি প্রজেক্ট খুলুন",
+    "step2": "Project Settings → API থেকে URL ও anon key নিন",
+    "step3": "সেগুলো `.env` ফাইলে বসান",
+    "step4": "ডেভ সার্ভার বন্ধ করে আবার চালু করুন"
+  },
+  "a11y": {
+    "skipToContent": "মূল অংশে যান",
+    "toggleTheme": "আলো/অন্ধকার বদলান",
+    "languageSwitch": "ভাষা বদলান",
+    "loading": "লোড হচ্ছে"
+  },
+  "units": {
+    "piece": "পিস",
+    "kg": "কেজি",
+    "gram": "গ্রাম",
+    "litre": "লিটার",
+    "ml": "মিলি",
+    "packet": "প্যাকেট",
+    "strip": "স্ট্রিপ",
+    "box": "বক্স",
+    "bottle": "বোতল",
+    "dozen": "ডজন"
+  },
+  "money": {
+    "taka": "টাকা",
+    "paid": "দেওয়া হয়েছে",
+    "due": "বাকি"
+  },
+  "settings": {
+    "title": "সেটিংস",
+    "appearance": "আলো না অন্ধকার",
+    "appearanceDark": "অন্ধকার",
+    "appearanceLight": "আলো",
+    "appearanceSystem": "ফোনের মতো",
+    "accent": "রঙ বাছুন",
+    "accentTeal": "সবুজ",
+    "accentBlue": "নীল",
+    "accentPurple": "বেগুনি",
+    "accentPink": "গোলাপি",
+    "accentAmber": "সোনালি",
+    "fontSize": "অক্ষরের আকার",
+    "fontSizeSm": "ছোট",
+    "fontSizeMd": "মাঝারি",
+    "fontSizeLg": "বড়",
+    "numerals": "সংখ্যা",
+    "numeralsBn": "বাংলা (০১২৩)",
+    "numeralsEn": "ইংরেজি (0123)",
+    "mode": "অ্যাপের ধরন",
+    "modeSimple": "সহজ মোড",
+    "modeSimpleHint": "শুধু ৪টি বড় বাটন",
+    "modePro": "প্রো মোড",
+    "modeProHint": "সব ফিচার একসাথে",
+    "language": "ভাষা",
+    "languageBn": "বাংলা",
+    "languageEn": "English",
+    "previewTitle": "দেখে নিন",
+    "previewSale": "আজকের বিক্রি",
+    "resetPrefs": "সব আগের মতো করুন",
+    "phaseNote": "এই অংশটি এখন প্রস্তুত হচ্ছে। পরের ধাপে বাকি কাজ যোগ হবে।"
+  },
+  "placeholder": {
+    "title": "শুরু হচ্ছে",
+    "body": "এই অংশটি এখনও তৈরি হচ্ছে। পরের ধাপে যোগ হবে।"
+  }
+}

@@ -2,11 +2,13 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import bnAuth from '@/locales/bn/auth.json';
 import bnCommon from '@/locales/bn/common.json';
+import bnCustomers from '@/locales/bn/customers.json';
 import bnOnboarding from '@/locales/bn/onboarding.json';
 import bnPos from '@/locales/bn/pos.json';
 import bnProducts from '@/locales/bn/products.json';
 import enAuth from '@/locales/en/auth.json';
 import enCommon from '@/locales/en/common.json';
+import enCustomers from '@/locales/en/customers.json';
 import enOnboarding from '@/locales/en/onboarding.json';
 import enPos from '@/locales/en/pos.json';
 import enProducts from '@/locales/en/products.json';
@@ -21,7 +23,7 @@ export const DEFAULT_LANGUAGE: AppLanguage = 'bn';
  * module gets loaded eagerly for now: the whole set is a few kB and offline
  * start-up must never wait on a chunk.
  */
-export const NAMESPACES = ['common', 'auth', 'onboarding', 'products', 'pos'] as const;
+export const NAMESPACES = ['common', 'auth', 'onboarding', 'products', 'pos', 'customers'] as const;
 export type AppNamespace = (typeof NAMESPACES)[number];
 
 export const resources = {
@@ -31,6 +33,7 @@ export const resources = {
     onboarding: bnOnboarding,
     products: bnProducts,
     pos: bnPos,
+    customers: bnCustomers,
   },
   en: {
     common: enCommon,
@@ -38,6 +41,7 @@ export const resources = {
     onboarding: enOnboarding,
     products: enProducts,
     pos: enPos,
+    customers: enCustomers,
   },
 } as const;
 

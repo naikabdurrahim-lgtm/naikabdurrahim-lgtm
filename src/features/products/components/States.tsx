@@ -1,4 +1,4 @@
-import { PackagePlus, RotateCw, SearchX } from 'lucide-react';
+import { PackagePlus, SearchX } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -20,26 +20,6 @@ export function ProductListSkeleton({ rows = 4 }: { rows?: number }) {
           <div className="skeleton h-4 w-14" />
         </div>
       ))}
-    </div>
-  );
-}
-
-export function ErrorPanel({
-  message,
-  retryLabel,
-  onRetry,
-}: {
-  message: string;
-  retryLabel: string;
-  onRetry: () => void;
-}) {
-  return (
-    <div className="app-card space-y-3 p-5 text-center" role="alert">
-      <p className="text-sm text-muted-foreground">{message}</p>
-      <Button type="button" variant="secondary" className="w-full" onClick={onRetry}>
-        <RotateCw aria-hidden="true" />
-        {retryLabel}
-      </Button>
     </div>
   );
 }
@@ -77,3 +57,6 @@ export function EmptyPanel({
     </div>
   );
 }
+
+// Kept as a re-export so the three catalogue screens keep one import line.
+export { ErrorPanel } from '@/components/common/ErrorPanel';

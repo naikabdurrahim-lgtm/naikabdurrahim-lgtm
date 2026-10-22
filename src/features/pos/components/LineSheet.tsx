@@ -5,7 +5,7 @@ import { Sheet } from '@/components/ui/sheet';
 import { useAppTranslation } from '@/lib/i18n/useAppTranslation';
 import { formatQuantityMilli, parseQuantityToMilli } from '@/lib/quantity';
 
-import { MoneyInput } from './MoneyInput';
+import { MoneyInput } from '@/components/common/MoneyInput';
 import type { CartLine } from '../types';
 
 type LineSheetProps = {

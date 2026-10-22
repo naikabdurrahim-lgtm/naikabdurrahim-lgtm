@@ -221,3 +221,53 @@ Manual (needs the Supabase project from `.env`):
     discount as a cashier → refused with **এই দোকানে ছাড় দেওয়ার অনুমতি আপনার নেই**.
 12. Enter a barcode in the search box and press Enter: the product is added and the
     box clears, ready for the next scan.
+
+## Phase 6 specific (due ledger & customers)
+
+Automated:
+
+- [x] `npm test` — 29 files, 341 tests, including `features/customers/api.test.ts`
+      (bigint strings, omitted optional args, error-code mapping, soft delete,
+      idempotent collection, reversal), `features/customers/schema.test.ts`
+      (name-only customer, four ways to write a phone, taka → paisa) and
+      `features/customers/components/CustomerListScreen.test.tsx` (total, debtor
+      rows, collect button only when money is owed, pre-filled full due, undo
+      calls `void_payment`, skeletons, retry on failure).
+- [x] `supabase/tests/80_customers.sql` — a sale minus a collection is the due;
+      voiding the sale removes the due; the debtor view hides settled customers;
+      the biggest debtor sorts first; a phone typed without `+880` still matches;
+      Bangla name search; `due_summary` totals, debtor count and customer count;
+      the khata shows the collection newest-first with the running balance;
+      page 2 of the ledger keeps the right `balance_after_paisa`; a cashier can
+      read dues and a non-member cannot (both RPCs); undo of a collection restores
+      the due and leaves the payment row marked voided; a second undo reports
+      `already_voided`; a cashier cannot reverse someone else's payment; a payment
+      amount can never be edited; a deleted customer leaves the list but the khata
+      stays readable.
+- [x] `supabase/tests/90_schema_guards.sql` — `payments` keeps a guard trigger
+      (`payments_guard_update`) even though it is no longer the plain
+      `no_update_delete` one.
+- [x] `npm run typecheck`, `npm run lint`, `npm run build`.
+
+Manual (needs the Supabase project from `.env`):
+
+1. Sign in as owner → **বাকি**. The total owed and the debtor count match what the
+   বিক্রি screen produced; the biggest debt is at the top.
+2. Type the first four digits of a phone number: the customer appears even though
+   the stored number starts with `+880`.
+3. Tap **আদায়** on a row: the sheet opens with the whole due already filled in.
+4. Take half instead: tap **অর্ধেক** → **টাকা পেয়েছি**. The row's due drops, the
+   total at the top drops, and the undo bar appears.
+5. Tap **ভুল হয়েছে? ফেরান** within ten seconds: the due comes back and the khata
+   shows two lines — "বাকি আদায়" and its reversal.
+6. Open the customer (tap the name): the khata lists every entry newest first with
+   the balance after each one, and sale lines link to their receipt.
+7. Set a credit limit of ৳৫০০ on a customer who owes ৳৬০০: the khata shows
+   **বাকির সীমা ছাড়িয়ে গেছে**.
+8. Delete that customer as the owner: they disappear from the list, the khata is
+   still readable from a direct link, and it says the customer was deleted.
+9. Sign in as a cashier: **কাস্টমার** is searchable, **আদায়** works, the edit and
+   delete icons are gone, and a second undo attempt after the window shows a
+   Bangla refusal rather than a Postgres message.
+10. Add a customer with only a name — it saves. Add another with the same phone
+    number — the form explains the duplicate instead of failing silently.

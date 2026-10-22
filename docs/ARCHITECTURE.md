@@ -218,3 +218,32 @@ SellPage
 - **Undo**: `void_sale()` with a reason — a reversal record, never a delete.
 - **Phase 9 seam**: the payload builder takes a client id, which is exactly what the
   offline outbox will store, so a queued sale replays instead of being re-created.
+
+## 13. Dues and customers (Phase 6)
+
+```
+/due            CustomerListScreen mode="due"   → list_customers(only_due => true)
+/customers      CustomerListScreen mode="all"   → list_customers(p_query => …)
+/customers/new  CustomerFormPage                → customers insert
+/customers/:id  CustomerPage                    → get_customer + customer_ledger
+   └─ CollectSheet → collect_due(p_payload)     → payments + ledger credit
+        └─ UndoBar (10 s) → void_payment()      → ledger debit + void marker
+```
+
+- **The balance is never stored and never summed in the browser.** `due_summary()`
+  returns the shop total, the debtor count and the oldest due; `customer_ledger()`
+  computes `balance_after_paisa` over the whole history *before* paging, so page 2
+  continues page 1 instead of restarting at zero.
+- **One ordering rule**: `list_customers` sorts by derived due descending, then by
+  name; the POS picker re-sorts by name because there the user is looking for a
+  person, not a debtor.
+- **A khata outlives its customer.** Deleting a customer sets `deleted_at`
+  (soft delete); the list hides the row, `get_customer()` still returns it with
+  `is_deleted = true`, and the ledger keeps every line.
+- **Collect once.** `collect_due()` is idempotent on `client_id`, so a retry after
+  a timeout returns the original payment instead of taking the money twice.
+- **Reversal, not deletion.** `void_payment()` writes a debit entry and marks the
+  payment; the pair stays visible. Cashiers may undo their own collection for ten
+  minutes, owners and managers at any time.
+- **Error codes, not SQL**: `CustomerApiError` / `LedgerApiError` map to
+  `customers:*` keys, so a refusal reads as a sentence in Bangla or English.

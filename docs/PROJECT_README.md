@@ -15,7 +15,8 @@
 | 3 | Auth & onboarding: phone + PIN, lockout, recovery code, four-step onboarding, six business packs | ✅ done |
 | 4 | Products & categories: paged search RPC, cost hidden from staff, add/edit/delete with undo, category sheet | ✅ done |
 | 5 | POS: product grid, barcode entry, fractional quantities, discounts, cash/credit, receipt, 10 s undo | ✅ done |
-| 6–12 | Due ledger → stock/reports → packs → offline sync → staff/audit → AI → Android/launch | next: 6 |
+| 6 | Due ledger & customers: বাকি screen, khata with running balance, collect with 10 s undo, soft delete | ✅ done |
+| 7–12 | Stock/reports → packs → offline sync → staff/audit → AI → Android/launch | next: 7 |
 
 The folder scaffold for every upcoming phase already exists, so later work adds files rather than restructuring.
 
@@ -67,7 +68,7 @@ src/
   lib/        money.ts, env.ts, i18n/, supabase/, useOnlineStatus.ts
   locales/    bn/ en/
   styles/     design tokens
-supabase/     migrations (10), seed, SQL test suites (5)            (Phase 2)
+supabase/     migrations (15), seed, SQL test suites (9)            (Phases 2–6)
 ai-service/   FastAPI AI service                     (Phase 11)
 docs/         rules, architecture, decisions, security, test plan
 ```

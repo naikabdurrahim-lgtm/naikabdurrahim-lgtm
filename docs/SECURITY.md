@@ -47,6 +47,17 @@ Checked at the end of every phase. Items marked **[P1]** are done in Phase 1; th
 - [x] **[P5]** The POS never receives or stores `buy_price_paisa`; the sell screen's payload contains only what the shop charges.
 - [ ] **[P9]** Offline sales must keep the same idempotency key from the outbox; a queued sale may only be replayed, never re-created.
 
+## Dues & customers (Phase 6)
+- [x] **[P6]** Every due read is a `security definer` function that checks `is_tenant_member()` itself and raises `not_authenticated` / `not_a_member`. `execute` is revoked from `public` and granted to `authenticated, service_role` only.
+- [x] **[P6]** Balances are derived from the append-only ledger; there is no cached balance to tamper with or to drift.
+- [x] **[P6]** A collection is written by `collect_due()` (amount > 0, ≤ outstanding balance, customer required) and is idempotent per `client_id`. The client has no INSERT path to `payments` or `ledger_entries`.
+- [x] **[P6]** Reversals go through `void_payment()`: it locks the payment row, refuses a second reversal, writes a reversing debit entry and sets the void marker. A cashier can only reverse **their own** payment, and only within ten minutes of `received_at` — a server timestamp, not a device one.
+- [x] **[P6]** `app.guard_payment_update()` keeps `payments` append-only: amount, method, customer, sale link and timestamps can never change; delete is refused outright.
+- [x] **[P6]** Deleting a customer is a soft delete (`deleted_at`), permitted to owner/manager only; the khata stays readable so old invoices still resolve to a name.
+- [x] **[P6]** Customer search is parameterised inside the RPC (`ilike '%' || v_query || '%'` over a bound variable), so a name containing quotes or `%` is data, not syntax.
+- [x] **[P6]** The customer form validates phone (BD mobile, normalised to E.164) and money (integer paisa) on the client; the CHECK constraints remain the source of truth.
+- [ ] **[P10]** A permanent payment reversal (outside the ten-minute window) should require an audit entry and an owner-only confirmation screen.
+
 ## Input validation (Phase 2+)
 - [x] **[P3]** Phone numbers normalised to E.164 before any use (`normaliseBdPhone`); invalid numbers never reach the server.
 - [x] **[P4]** Zod on the client for the product and category forms (Bangla messages from the locale files, never raw Postgres text).

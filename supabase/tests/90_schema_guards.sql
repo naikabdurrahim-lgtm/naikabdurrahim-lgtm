@@ -70,11 +70,13 @@ select tests.eq(
   'every SECURITY DEFINER function pins its search_path'
 );
 
--- Append-only tables must actually have the guard trigger.
+-- Append-only tables must actually have the guard trigger. `payments` is the
+-- one exception: migration 0015 lets void_payment() set the void marker and
+-- nothing else, so its guard is a separate function that must be proven.
 select tests.eq(
   (select count(*)
    from unnest(array[
-     'ledger_entries', 'sale_items', 'payments', 'stock_movements',
+     'ledger_entries', 'sale_items', 'stock_movements',
      'audit_logs', 'sync_events'
    ]) as t(name)
    where not exists (
@@ -88,6 +90,18 @@ select tests.eq(
    )),
   0::bigint,
   'every append-only table has its mutation guard trigger'
+);
+
+select tests.eq(
+  (select count(*)
+   from pg_trigger tg
+   join pg_class c on c.oid = tg.tgrelid
+   join pg_namespace n on n.oid = c.relnamespace
+   where n.nspname = 'public' and c.relname = 'payments'
+     and tg.tgname = 'payments_guard_update'
+     and not tg.tgisinternal),
+  1::bigint,
+  'payments keeps a guard trigger that only permits the one-way void marker'
 );
 
 -- Money columns must be integer types. A float column here is a shipping bug.

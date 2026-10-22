@@ -10,7 +10,7 @@ import { useAuth } from '@/features/auth/useAuth';
 import { useAppTranslation } from '@/lib/i18n/useAppTranslation';
 import { setProductDeleted } from '../api';
 
-import { Field } from '../components/Field';
+import { Field } from '@/components/common/Field';
 import { describedBy, inputClass } from '../components/fieldStyles';
 import { CategoryChips, UnitPicker } from '../components/pickers';
 import { ErrorPanel, ProductListSkeleton } from '../components/States';

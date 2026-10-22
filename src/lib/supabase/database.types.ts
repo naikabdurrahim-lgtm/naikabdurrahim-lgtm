@@ -257,6 +257,7 @@ export type Database = {
           created_at: string;
           created_by: string | null;
           client_id: string;
+          seq: number;
         };
         Insert: {
           id?: string;
@@ -271,6 +272,7 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
           client_id: string;
+          seq: number;
         };
         Update: {
           id?: string;
@@ -285,6 +287,7 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
           client_id?: string;
+          seq?: number;
         };
         Relationships: [
           {
@@ -317,6 +320,9 @@ export type Database = {
           received_at: string;
           created_at: string;
           created_by: string;
+          voided_at: string | null;
+          voided_by: string | null;
+          void_reason: string | null;
         };
         Insert: {
           id?: string;
@@ -331,6 +337,9 @@ export type Database = {
           received_at?: string;
           created_at?: string;
           created_by?: string;
+          voided_at?: string | null;
+          voided_by?: string | null;
+          void_reason?: string | null;
         };
         Update: {
           id?: string;
@@ -345,6 +354,9 @@ export type Database = {
           received_at?: string;
           created_at?: string;
           created_by?: string;
+          voided_at?: string | null;
+          voided_by?: string | null;
+          void_reason?: string | null;
         };
         Relationships: [
           {
@@ -1269,6 +1281,55 @@ export type Database = {
         };
         Returns: number;
       };
+      customer_ledger: {
+        Args: {
+          p_tenant: string;
+          p_customer: string;
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: {
+          id: string | null;
+          entry_type: string | null;
+          amount_paisa: number | null;
+          balance_after_paisa: number | null;
+          occurred_at: string | null;
+          note: string | null;
+          sale_id: string | null;
+          payment_id: string | null;
+          invoice_no: string | null;
+        }[];
+      };
+      due_summary: {
+        Args: {
+          p_tenant: string;
+        };
+        Returns: {
+          total_due_paisa: number | null;
+          debtor_count: number | null;
+          customer_count: number | null;
+          oldest_due_at: string | null;
+        }[];
+      };
+      get_customer: {
+        Args: {
+          p_tenant: string;
+          p_customer: string;
+        };
+        Returns: {
+          id: string | null;
+          name: string | null;
+          phone: string | null;
+          address: string | null;
+          note: string | null;
+          due_paisa: number | null;
+          credit_limit_paisa: number | null;
+          is_active: boolean | null;
+          is_deleted: boolean | null;
+          last_activity_at: string | null;
+          created_at: string | null;
+        }[];
+      };
       has_tenant_role: {
         Args: {
           p_tenant: string;
@@ -1306,6 +1367,24 @@ export type Database = {
           sort_order: number | null;
           is_active: boolean | null;
           product_count: number | null;
+        }[];
+      };
+      list_customers: {
+        Args: {
+          p_tenant: string;
+          p_query?: string;
+          p_only_due?: boolean;
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: {
+          id: string | null;
+          name: string | null;
+          phone: string | null;
+          due_paisa: number | null;
+          credit_limit_paisa: number | null;
+          last_activity_at: string | null;
+          created_at: string | null;
         }[];
       };
       purge_old_auth_attempts: {
@@ -1376,6 +1455,14 @@ export type Database = {
         Args: {
           p_tenant: string;
           p_date?: string;
+        };
+        Returns: Json;
+      };
+      void_payment: {
+        Args: {
+          p_tenant: string;
+          p_payment: string;
+          p_reason?: string;
         };
         Returns: Json;
       };

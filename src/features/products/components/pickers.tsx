@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { UNIT_CODES, type UnitCode } from '@/packs';
 
 import type { Category } from '../types';
-import { Field } from './Field';
+import { Field } from '@/components/common/Field';
 import { inputClass } from './fieldStyles';
 
 /**

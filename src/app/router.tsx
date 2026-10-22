@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { BarChart3, Boxes, Users, Wallet } from 'lucide-react';
+import { BarChart3, Boxes } from 'lucide-react';
 import { AppShell } from '@/app/layout/AppShell';
 import { HomePage } from '@/app/pages/HomePage';
 import { HealthPage } from '@/app/pages/HealthPage';
@@ -17,6 +17,10 @@ import { SaleReceiptPage } from '@/features/pos/pages/SaleReceiptPage';
 import { ProductsPage } from '@/features/products/pages/ProductsPage';
 import { ProductFormPage } from '@/features/products/pages/ProductFormPage';
 import { CategoriesPage } from '@/features/products/pages/CategoriesPage';
+import { DuePage } from '@/features/customers/pages/DuePage';
+import { CustomersPage } from '@/features/customers/pages/CustomersPage';
+import { CustomerPage } from '@/features/customers/pages/CustomerPage';
+import { CustomerFormPage } from '@/features/customers/pages/CustomerFormPage';
 
 /**
  * Route table.
@@ -57,8 +61,11 @@ export const router = createBrowserRouter([
                 ],
               },
               {
+                // বাকি: every role may look and collect (RLS decides the rest),
+                // because the person at the counter is usually the one taking
+                // the money.
                 path: 'due',
-                element: <ModulePlaceholder icon={Wallet} titleKey="nav.due" phase={6} />,
+                element: <DuePage />,
               },
               {
                 path: 'stock',
@@ -81,7 +88,12 @@ export const router = createBrowserRouter([
               },
               {
                 path: 'customers',
-                element: <ModulePlaceholder icon={Users} titleKey="nav.customers" phase={6} />,
+                children: [
+                  { index: true, element: <CustomersPage /> },
+                  { path: 'new', element: <CustomerFormPage /> },
+                  { path: ':customerId', element: <CustomerPage /> },
+                  { path: ':customerId/edit', element: <CustomerFormPage /> },
+                ],
               },
               {
                 // Profit and cost data: owner and manager only.

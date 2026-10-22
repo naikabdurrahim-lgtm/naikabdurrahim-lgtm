@@ -5,6 +5,22 @@ Rule (PROJECT_RULES 1.9): every non-trivial choice goes here so future phases do
 
 ---
 
+## 2026-10-22 — Phase 6 dues & customers
+
+| # | Decision | Reason |
+|---|---|---|
+| 85 | **The customer list and the khata are read through four `security definer` functions** (`list_customers`, `due_summary`, `get_customer`, `customer_ledger`), not through `v_customer_balances`. | The view is `security_invoker` and groups by customer, so it can neither page, nor search, nor filter to debtors without the client downloading every row. The functions also let a soft-deleted customer stay readable. |
+| 86 | **`ledger_entries` gained a `seq bigint generated always as identity`, and the khata sorts by it.** | `occurred_at` defaults to `now()`, which is the transaction start: a sale and its payment in one transaction tie, and a running balance over a tie is arbitrary. Insertion order is the only honest order an append-only ledger has. |
+| 87 | **`payments` stays append-only, with one narrow exception**: `app.guard_payment_update()` permits setting `voided_at / voided_by / void_reason` once, and refuses every other change or any delete. | The ledger can be reversed but the money row must not silently change. A guard that enumerates the allowed change is stricter than dropping the trigger. |
+| 88 | **Undoing a collection writes a *debit* ledger entry through `void_payment()`; the payment row is never deleted.** | Matches the sale rule (reversals, never edits), keeps the khata explainable ("আদায়" and "আদায় বাতিল" side by side) and makes the reversal idempotent. |
+| 89 | **A cashier may reverse their own collection for ten minutes; an owner or manager may reverse any payment at any time.** | The counter needs a mis-tap fixed before the customer leaves; yesterday's takings must not be quietly reversible by whoever is on shift. "Ten minutes" is server time, not device time. |
+| 90 | **Debtors come first, biggest debt on top, then everyone else by name.** | The বাকি screen exists to answer "who owes me the most"; `/customers` re-sorts by name only inside the POS picker, where the user is looking for a person. |
+| 91 | **`/due` and `/customers` are one component (`CustomerListScreen`) with a `mode` flag.** | The two screens differ by one filter and one button. Two copies would drift, and the screen that must never be wrong is the one the shopkeeper checks at closing time. |
+| 92 | **Search on a phone number compares after stripping `+` and spaces, server-side.** | A shopkeeper reads `01712345678` from a receipt while the column stores `+8801712345678`; a client-side `ilike` would never match. |
+| 93 | **The collect sheet offers নগদ / বিকাশ / নগদ (Nagad) / রকেট**, although `payment_method` also has `card`, `bank`, `other`. | The other three are rare enough in a small shop that a longer grid costs more taps than it saves; the column keeps them for the API and later phases. |
+| 94 | **A customer needs only a name**; phone, address, note and credit limit are optional. | Half the regulars are known by name. Requiring a number would push the shopkeeper to invent one, which poisons duplicate detection. |
+| 95 | **`ErrorPanel`, `EmptyState` and `Field` moved to `src/components/common/`.** | Three features now render the same failure state; a per-feature copy is how "no raw errors" quietly stops being true. |
+
 ## 2026-10-22 — Phase 5 POS
 
 | # | Decision | Reason |

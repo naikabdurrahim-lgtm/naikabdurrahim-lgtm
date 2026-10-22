@@ -7,7 +7,7 @@ import { inputClass } from '@/components/ui/input';
 import { useAppTranslation } from '@/lib/i18n/useAppTranslation';
 import { formatPaisa, toEnglishDigits } from '@/lib/money';
 
-import { MoneyInput } from './MoneyInput';
+import { MoneyInput } from '@/components/common/MoneyInput';
 import {
   PAYMENT_METHODS,
   type Cart,

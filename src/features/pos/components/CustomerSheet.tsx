@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Loader2, Search, UserPlus } from 'lucide-react';
 
+import { MoneyText } from '@/components/common/MoneyText';
 import { Button } from '@/components/ui/button';
 import { Sheet } from '@/components/ui/sheet';
 import { inputClass } from '@/components/ui/input';
+import { formatBdPhone } from '@/features/auth/lib/phone';
 import { useAppTranslation } from '@/lib/i18n/useAppTranslation';
 import { useDebouncedValue } from '@/lib/useDebouncedValue';
 import { useCreateCustomer, useCustomerSearch } from '@/features/customers/queries';
@@ -116,11 +118,18 @@ export function CustomerSheet({ open, tenantId, onClose, onSelect }: CustomerShe
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium">{customer.name}</span>
                   {customer.phone ? (
-                    <span className="block text-xs text-muted-foreground" dir="ltr">
-                      {customer.phone}
+                    <span className="bn-digits block text-xs text-muted-foreground" dir="ltr">
+                      {formatBdPhone(customer.phone)}
                     </span>
                   ) : null}
                 </span>
+                {/* The due travels with the pick, so the cashier can say
+                    "আপনার তো ৬০০ টাকা বাকি আছে" without leaving the sale. */}
+                {customer.duePaisa > 0 ? (
+                  <span className="shrink-0 text-xs font-medium text-money-out">
+                    {tc('money.due')} <MoneyText paisa={customer.duePaisa} tone="out" />
+                  </span>
+                ) : null}
               </button>
             </li>
           ))}

@@ -10,7 +10,7 @@ import { usePreferences } from '@/features/settings/preferences';
 import { formatInteger } from '@/lib/format';
 
 import { setCategoryDeleted } from '../api';
-import { Field } from '../components/Field';
+import { Field } from '@/components/common/Field';
 import { inputClass } from '../components/fieldStyles';
 import { EmptyPanel, ErrorPanel, ProductListSkeleton } from '../components/States';
 import {
